@@ -6,11 +6,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
+import neighbourhood_generator.AbstractNeighbourhoodGenerator;
+import neighbourhood_generator.ExchangeNeighbourhoodGenerator;
+import neighbourhood_generator.InsertNeighbourhoodGenerator;
+import neighbourhood_generator.TransposeNeighbourhoodGenerator;
 import pivoting_manager.AbstractPivotingManager;
 import pivoting_manager.FirstPivotingManager;
-
-import neighbourhood_generator.AbstractNeighbourhoodGenerator;
-import neighbourhood_generator.TransposeNeighbourhoodGenerator;
 
 
 public class IterativeImprovement {
@@ -31,7 +32,6 @@ public class IterativeImprovement {
 	private int initMode;
 	
 	private int[][] processingTimes;
-	private int[][] completionTimes;
 	private int[] dueDates;
 	private int[] priorities;
 	private int jobsAmount;
@@ -127,7 +127,6 @@ public class IterativeImprovement {
 			
 			// Instanciate the matrices:
 			this.processingTimes = new int[this.jobsAmount][this.machineAmount];
-			this.completionTimes = new int[this.jobsAmount][this.machineAmount];
 			
 			// Get the processing times:
 			for (int i = 0; i < this.jobsAmount; ++i){
