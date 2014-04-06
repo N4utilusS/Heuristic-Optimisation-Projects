@@ -1,8 +1,9 @@
+package main;
 
 public class Permutation {
 	private int[] jobs;
 	
-	Permutation(int amountOfJobs){
+	public Permutation(int amountOfJobs){
 		super();
 		this.jobs = new int[amountOfJobs];
 		
@@ -10,7 +11,7 @@ public class Permutation {
 			this.jobs[i] = i;
 	}
 	
-	void swap(int i, int j){
+	public void swap(int i, int j){
 		int temp = jobs[i];
 		jobs[i] = jobs[j];
 		jobs[j] = temp;
@@ -26,7 +27,7 @@ public class Permutation {
 		this.jobs[placeNumber] = temp;
 	}
 	
-	int size(){
+	public int size(){
 		return this.jobs.length;
 	}
 }

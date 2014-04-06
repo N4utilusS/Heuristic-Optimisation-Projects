@@ -1,4 +1,8 @@
+package initial_solution;
+
 import java.util.Random;
+
+import main.Permutation;
 
 
 public class RandomInitialSolutionGenerator implements InitialSolutionGenerator {
