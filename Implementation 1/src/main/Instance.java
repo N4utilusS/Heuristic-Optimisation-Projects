@@ -49,4 +49,32 @@ public class Instance {
 	public int getInstanceNumber() {
 		return instanceNumber;
 	}
+	
+	public String toString(){
+		String str = "";
+		
+		str += "Instance Number: " + instanceNumber + "\n";
+		str += "Processing Times:\n";
+		
+		for (int i = 0; i < this.getJobsAmount(); ++i){
+			for (int j = 0; j < this.getMachineAmount(); ++j){
+				str += this.processingTimes[i][j] + "\t";
+			}
+			str += "\n";
+		}
+		
+		str += "Due Dates:\n";
+		
+		for (int i = 0; i < this.getJobsAmount(); ++i){
+			str += this.dueDates[i] + "\t";
+		}
+		
+		str += "\nPriorities:\n";
+		
+		for (int i = 0; i < this.getJobsAmount(); ++i){
+			str += this.priorities[i] + "\t";
+		}
+		
+		return str;
+	}
 }

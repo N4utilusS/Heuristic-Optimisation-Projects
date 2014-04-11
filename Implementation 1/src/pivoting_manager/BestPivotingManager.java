@@ -11,8 +11,15 @@ public class BestPivotingManager extends AbstractPivotingManager {
 
 	@Override
 	public Permutation getNewPermutation(Permutation permutation) {
-		// TODO Auto-generated method stub
-		return null;
+		Permutation newPermutation;
+		Permutation bestPermutation = permutation;
+
+		while ((newPermutation = this.neighbourhoodGenerator.getNextNeighbour(permutation)) != null){
+			if (newPermutation.getTotalWeightedTardiness() < bestPermutation.getTotalWeightedTardiness())
+				bestPermutation = newPermutation;
+		}
+
+		return bestPermutation;
 	}
 
 }

@@ -10,10 +10,12 @@ public class ExchangeNeighbourhoodGenerator extends AbstractNeighbourhoodGenerat
 	@Override
 	public Permutation getNextNeighbour(Permutation permutation){
 		super.getNextNeighbour(permutation);
+		
 		if (this.j == permutation.size()){
 			++i;
 			j = i + 1;
 		}
+		
 		if (this.i == permutation.size()-1)
 			return null;
 		

@@ -26,7 +26,7 @@ public class RandomInitialSolutionGenerator implements InitialSolutionGenerator 
 		{
 			int index = rnd.nextInt(i + 1);
 			// Simple swap
-			p.swap(index, i);
+			p = p.swap(index, i);
 		}
 		
 		return p;
