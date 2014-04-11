@@ -3,42 +3,87 @@ package main;
 public class Permutation {
 	private int[] jobs;
 	private int[][] completionTimes;
+	private int[] jobsWeightedTardiness;
 	private int newValueIndex = 0;
-	
-	public Permutation(int amountOfJobs){
+	private Instance instance;
+
+	public Permutation(Instance instance){
 		super();
-		this.jobs = new int[amountOfJobs];
+		this.instance = instance;
 		
+		int amountOfJobs = instance.getJobsAmount();
+		this.jobs = new int[amountOfJobs];
+
 		for (int i = 0; i < amountOfJobs; ++i)
 			this.jobs[i] = i;
 	}
-	
-	public Permutation(int[] jobs, int[][] otherCompletionTimes, int newValueIndex){
+
+	private Permutation(Instance instance, int[] jobs, int[][] otherCompletionTimes, int newValueIndex){
+		this.instance = instance;
 		this.jobs = jobs;
 		this.completionTimes = otherCompletionTimes;
 		this.newValueIndex = newValueIndex;
 	}
-	
-	public int getTotalWeightedTardiness(int[][] processingTimes, int[] dueDates, int[] priorities){
+
+	public int getTotalWeightedTardiness(){
 		
+		// No need to recalculate if nothing has changed since the previous call.
+		if (this.newValueIndex == instance.getJobsAmount())
+			return this.jobsWeightedTardiness[this.jobs.length-1];
+		
+		if (this.newValueIndex == 0){
+
+			// Initialize if no matrix yet.
+			if (this.completionTimes == null)
+				this.completionTimes = new int[instance.getJobsAmount()][instance.getMachineAmount()];
+			if (this.jobsWeightedTardiness == null)
+				this.jobsWeightedTardiness = new int[instance.getJobsAmount()];
+
+			// Calculate the first column of the completion matrix.
+			this.completionTimes[0][0] = instance.getProcessingTimeFor(this.jobs[0], 0);
+
+			for (int i = 1; i < instance.getMachineAmount(); ++i){
+				this.completionTimes[0][i] = this.completionTimes[0][i-1] + instance.getProcessingTimeFor(this.jobs[0], i);
+			}
+		}
+
+		// Calculate the first line of the completion matrix.
+		for (int i = Math.max(1, this.newValueIndex); i < instance.getJobsAmount(); ++i){
+			this.completionTimes[i][0] = this.completionTimes[i-1][0] + instance.getProcessingTimeFor(this.jobs[i], 0);
+		}
+
+		for (int i = Math.max(1, this.newValueIndex); i < instance.getJobsAmount(); ++i){
+			for (int j = 1; j < instance.getMachineAmount(); ++j){
+				completionTimes[i][j] = Math.max(completionTimes[i-1][j], completionTimes[i][j-1]) + instance.getProcessingTimeFor(this.jobs[i], j);
+			}
+		}
+		
+		// Compute the tardiness of each job.
+		int currentSum = (this.newValueIndex > 0) ? this.jobsWeightedTardiness[this.newValueIndex-1] : 0;
+		for (int i = this.newValueIndex; i < instance.getJobsAmount(); ++i){
+			this.jobsWeightedTardiness[i] = currentSum + instance.getPriorityFor(this.jobs[i]) * Math.max(this.completionTimes[i][instance.getMachineAmount()-1] - instance.getDueDateFor(this.jobs[i]), 0);
+			currentSum = this.jobsWeightedTardiness[i];
+		}
+
 		// Update the newValueIndex value, since the total weighted tardiness is up to date.
 		// Thanks to this, each time this method will be called, no calculation will be needed to return the cost.
-		this.newValueIndex = processingTimes[0].length;
-		return 0;
+		this.newValueIndex = instance.getJobsAmount();
+		
+		return this.jobsWeightedTardiness[instance.getMachineAmount()-1];
 	}
-	
+
 	public Permutation swap(int i, int j){
 		int[] jobs = this.jobs.clone();
 		int temp = jobs[i];
 		jobs[i] = jobs[j];
 		jobs[j] = temp;
-		return new Permutation(jobs, this.completionTimes, Math.min(i, j));
+		return new Permutation(this.instance, jobs, this.completionTimes, Math.min(i, j));
 	}
-	
+
 	public Permutation insert(int jobNumber, int placeNumber){
 		int[] jobs = this.jobs.clone();
 		int temp = jobs[jobNumber];
-		
+
 		if (placeNumber >= jobNumber){
 			for (int i = jobNumber; i < placeNumber; ++i){
 				jobs[i] = jobs[i+1];
@@ -48,13 +93,18 @@ public class Permutation {
 				jobs[i] = jobs[i-1];
 			}
 		}
-		
-		
+
+
 		jobs[placeNumber] = temp;
-		return new Permutation(jobs, this.completionTimes, Math.min(jobNumber, placeNumber));
+		return new Permutation(this.instance, jobs, this.completionTimes, Math.min(jobNumber, placeNumber));
 	}
-	
+
 	public int size(){
 		return this.jobs.length;
+	}
+
+	public void setInstance(Instance instance) {
+		this.instance = instance;
+		this.newValueIndex = 0;
 	}
 }

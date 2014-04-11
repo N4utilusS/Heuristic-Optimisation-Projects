@@ -2,15 +2,16 @@ package initial_solution;
 
 import java.util.Random;
 
+import main.Instance;
 import main.Permutation;
 
 
 public class RandomInitialSolutionGenerator implements InitialSolutionGenerator {
 
 	@Override
-	public Permutation getInitialSolution(int jobsAmount) {
+	public Permutation getInitialSolution(Instance instance) {
 
-		Permutation p = new Permutation(jobsAmount);
+		Permutation p = new Permutation(instance);
 		return shuffleArray(p);
 	}
 

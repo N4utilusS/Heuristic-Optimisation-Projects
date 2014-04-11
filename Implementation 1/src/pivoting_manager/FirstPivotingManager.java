@@ -16,9 +16,9 @@ public class FirstPivotingManager extends AbstractPivotingManager {
 		do {
 			newPermutation = this.neighbourhoodGenerator.getNextNeighbour(permutation);
 			
-		} while ();
+		} while (newPermutation != null && newPermutation.getTotalWeightedTardiness() <= permutation.getTotalWeightedTardiness());
 		
-		return this.neighbourhoodGenerator.getNextNeighbour(permutation);
+		return (newPermutation == null) ? permutation : newPermutation;
 	}
 
 }

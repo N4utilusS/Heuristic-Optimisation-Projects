@@ -7,9 +7,9 @@ public abstract class AbstractPivotingManager {
 	
 	protected AbstractNeighbourhoodGenerator neighbourhoodGenerator;
 
-	AbstractPivotingManager(AbstractNeighbourhoodGenerator neighbourhoodGenerator){
+	public AbstractPivotingManager(AbstractNeighbourhoodGenerator neighbourhoodGenerator){
 		this.neighbourhoodGenerator = neighbourhoodGenerator;
 	}
 
-	abstract Permutation getNewPermutation(Permutation permutation);
+	public abstract Permutation getNewPermutation(Permutation permutation);
 }

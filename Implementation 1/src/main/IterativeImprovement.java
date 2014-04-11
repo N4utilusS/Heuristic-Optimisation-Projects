@@ -11,6 +11,7 @@ import neighbourhood_generator.ExchangeNeighbourhoodGenerator;
 import neighbourhood_generator.InsertNeighbourhoodGenerator;
 import neighbourhood_generator.TransposeNeighbourhoodGenerator;
 import pivoting_manager.AbstractPivotingManager;
+import pivoting_manager.BestPivotingManager;
 import pivoting_manager.FirstPivotingManager;
 
 
@@ -30,12 +31,8 @@ public class IterativeImprovement {
 	private int pivotingMode;
 	private int neighbourhoodMode;
 	private int initMode;
+	private Instance instance;
 	
-	private int[][] processingTimes;
-	private int[] dueDates;
-	private int[] priorities;
-	private int jobsAmount;
-	private int machineAmount;
 	
 	IterativeImprovement(int pivotingMode, int neighbourhoodMode, int initMode){
 		super();
@@ -47,6 +44,7 @@ public class IterativeImprovement {
 	void findSolution(File file){
 		
 		// Start the timer
+		long timer = System.currentTimeMillis();
 		
 		// Find the size of the problem (#jobs and #machines), and other information
 		getInformation(file);
@@ -65,7 +63,7 @@ public class IterativeImprovement {
 			initialSolutionGenerator = new RandomInitialSolutionGenerator();
 		}
 		
-		Permutation permutation = initialSolutionGenerator.getInitialSolution(this.jobsAmount);
+		Permutation permutation = initialSolutionGenerator.getInitialSolution(this.instance);
 		
 		// Get the neighbourhood generator
 		AbstractNeighbourhoodGenerator neighbourhoodGenerator;
@@ -98,13 +96,17 @@ public class IterativeImprovement {
 		}
 		
 		// Iterate while not local optimum
-		Permutation newPermutation;
+		Permutation newPermutation = permutation;
 		
 		do {
-			
-		} while (newPermutation != permutation);
+			permutation = newPermutation;
+			newPermutation = pivotingManager.getNewPermutation(permutation);
+		} while (newPermutation != permutation);	// Local optimum when the permutations are the same (same pointer).
 		
 		// End the timer
+		timer = System.currentTimeMillis() - timer;
+		
+		System.out.println("");
 	}
 
 	/**
@@ -113,44 +115,46 @@ public class IterativeImprovement {
 	 * @param file The file containing the information for the instances.
 	 */
 	private void getInformation(File file) {
+		int jobsAmount;
+		int machineAmount;
 		
 		try(Scanner scanner = new Scanner(file)) {
 			// Get the jobs amount:
 			if (!scanner.hasNextInt())
 				throw new Exception("Jobs amount is missing in the file: " + file.getPath());
-			this.jobsAmount = scanner.nextInt();
+			jobsAmount = scanner.nextInt();
 			
 			// Get the machine amount:
 			if (!scanner.hasNextInt())
 				throw new Exception("Machine amount is missing in the file: " + file.getPath());
-			this.machineAmount = scanner.nextInt();
+			machineAmount = scanner.nextInt();
 			
 			// Instanciate the matrices:
-			this.processingTimes = new int[this.jobsAmount][this.machineAmount];
+			int[][] processingTimes = new int[jobsAmount][machineAmount];
 			
 			// Get the processing times:
-			for (int i = 0; i < this.jobsAmount; ++i){
-				for (int j = 0; j < this.machineAmount; ++j){
+			for (int i = 0; i < jobsAmount; ++i){
+				for (int j = 0; j < machineAmount; ++j){
 					if (!scanner.hasNextInt())
 						throw new Exception("Machine number is missing for job " + (i+1) + " in the file: " + file.getPath());
 					if (!scanner.hasNextInt())
 						throw new Exception("Machine processing time is missing for job " + (i+1) + ", machine " + (j+1) + ", in the file: " + file.getPath());
-					this.processingTimes[i][j] = scanner.nextInt();
-					if (this.processingTimes[i][j] < 0)
-						this.processingTimes[i][j] = 0;
+					processingTimes[i][j] = scanner.nextInt();
+					if (processingTimes[i][j] < 0)
+						processingTimes[i][j] = 0;
 					
 				}
 			}
 			
 			// Get the due dates and the priorities:
-			this.dueDates = new int[this.jobsAmount];
-			this.priorities = new int[this.jobsAmount];
+			int[] dueDates = new int[jobsAmount];
+			int[] priorities = new int[jobsAmount];
 			
 			if (!scanner.hasNext())
 				throw new Exception("Reldue string is missing in the file: " + file.getPath());
 			scanner.next();
 			
-			for (int i = 0; i < this.jobsAmount; ++i){
+			for (int i = 0; i < jobsAmount; ++i){
 				
 				if (!scanner.hasNextInt())
 					throw new Exception("-1 is missing in the file: " + file.getPath());
@@ -158,8 +162,8 @@ public class IterativeImprovement {
 				
 				if (!scanner.hasNextInt())
 					throw new Exception("Due date is missing in the file: " + file.getPath());
-				this.dueDates[i] = scanner.nextInt();
-				if (this.dueDates[i] < 1)
+				dueDates[i] = scanner.nextInt();
+				if (dueDates[i] < 1)
 					throw new Exception("Due date negative for job " + i + " in the file: " + file.getPath());
 				
 				if (!scanner.hasNextInt())
@@ -168,10 +172,15 @@ public class IterativeImprovement {
 				
 				if (!scanner.hasNextInt())
 					throw new Exception("Due date is missing in the file: " + file.getPath());
-				this.priorities[i] = scanner.nextInt();
-				if (this.priorities[i] < 1)
+				priorities[i] = scanner.nextInt();
+				if (priorities[i] < 1)
 					throw new Exception("Priority negative for job " + i + " in the file: " + file.getPath());
 			}
+			
+			// Get the instance number (the last number in the file name).
+			String number = file.getName().substring(file.getName().lastIndexOf("_")+1);
+			
+			this.instance = new Instance(processingTimes, dueDates, priorities, Integer.parseInt(number));
 			
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
