@@ -1,6 +1,7 @@
 package main;
 import initial_solution.InitialSolutionGenerator;
 import initial_solution.RandomInitialSolutionGenerator;
+import initial_solution.SlackInitialSolutionGenerator;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -128,7 +129,7 @@ public class IterativeImprovement {
 			initialSolutionGenerator = new RandomInitialSolutionGenerator();
 			break;
 		case SLACK_INIT:
-			initialSolutionGenerator = new RandomInitialSolutionGenerator();	// TODO replace by other
+			initialSolutionGenerator = new SlackInitialSolutionGenerator();
 			break;
 		default:
 			initialSolutionGenerator = new RandomInitialSolutionGenerator();

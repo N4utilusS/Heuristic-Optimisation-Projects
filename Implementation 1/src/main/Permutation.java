@@ -38,26 +38,7 @@ public class Permutation {
 		if (this.newValueIndex == instance.getJobsAmount())
 			return this.jobsWeightedTardiness[instance.getJobsAmount()-1];
 
-		if (this.newValueIndex == 0){
-
-			// Calculate the first column of the completion matrix.
-			this.completionTimes[0][0] = instance.getProcessingTimeFor(this.jobs[0], 0);
-
-			for (int i = 1; i < instance.getMachineAmount(); ++i){
-				this.completionTimes[0][i] = this.completionTimes[0][i-1] + instance.getProcessingTimeFor(this.jobs[0], i);
-			}
-		}
-
-		// Calculate the first line of the completion matrix.
-		for (int i = Math.max(1, this.newValueIndex); i < instance.getJobsAmount(); ++i){
-			this.completionTimes[i][0] = this.completionTimes[i-1][0] + instance.getProcessingTimeFor(this.jobs[i], 0);
-		}
-
-		for (int i = Math.max(1, this.newValueIndex); i < instance.getJobsAmount(); ++i){
-			for (int j = 1; j < instance.getMachineAmount(); ++j){
-				completionTimes[i][j] = Math.max(completionTimes[i-1][j], completionTimes[i][j-1]) + instance.getProcessingTimeFor(this.jobs[i], j);
-			}
-		}
+		this.computeCompletionTimes(this.instance.getJobsAmount()-1);
 
 		// Compute the tardiness of each job.
 		int currentSum = (this.newValueIndex > 0) ? this.jobsWeightedTardiness[this.newValueIndex-1] : 0;
@@ -71,6 +52,32 @@ public class Permutation {
 		this.newValueIndex = instance.getJobsAmount();
 
 		return this.jobsWeightedTardiness[instance.getMachineAmount()-1];
+	}
+	
+	private void computeCompletionTimes(int maxJobNumber){
+		maxJobNumber = Math.min(maxJobNumber, this.instance.getJobsAmount()-1);
+		maxJobNumber = Math.max(0, maxJobNumber);
+		
+		if (this.newValueIndex == 0){
+
+			// Calculate the first column of the completion matrix.
+			this.completionTimes[0][0] = instance.getProcessingTimeFor(this.jobs[0], 0);
+
+			for (int i = 1; i < instance.getMachineAmount(); ++i){
+				this.completionTimes[0][i] = this.completionTimes[0][i-1] + instance.getProcessingTimeFor(this.jobs[0], i);
+			}
+		}
+
+		// Calculate the first line of the completion matrix.
+		for (int i = Math.max(1, this.newValueIndex); i <= maxJobNumber; ++i){
+			this.completionTimes[i][0] = this.completionTimes[i-1][0] + instance.getProcessingTimeFor(this.jobs[i], 0);
+		}
+
+		for (int i = Math.max(1, this.newValueIndex); i <= maxJobNumber; ++i){
+			for (int j = 1; j < instance.getMachineAmount(); ++j){
+				completionTimes[i][j] = Math.max(completionTimes[i-1][j], completionTimes[i][j-1]) + instance.getProcessingTimeFor(this.jobs[i], j);
+			}
+		}
 	}
 
 	public Permutation swap(int i, int j){
@@ -122,5 +129,14 @@ public class Permutation {
 		}
 
 		return str + " --> " + this.getTotalWeightedTardiness();
+	}
+	
+	public int getWeightedEarlyness(int jobNumber){
+		if (this.newValueIndex <= jobNumber)
+			this.computeCompletionTimes(jobNumber);
+		// Here the newValueIndex is not updated to jobNumber, since we still need to update the jobsWeightedTardiness vector when 
+		// we want the total weighted tardiness (update from the current index newIndexValue).
+		
+		return this.instance.getPriorityFor(this.jobs[jobNumber]) * (this.instance.getDueDateFor(this.jobs[jobNumber]) - this.completionTimes[jobNumber][this.instance.getMachineAmount()-1]);
 	}
 }
