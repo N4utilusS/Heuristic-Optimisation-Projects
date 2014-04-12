@@ -8,6 +8,7 @@ import static main.IterativeImprovement.*;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.Map;
 
@@ -73,7 +74,16 @@ public class Main {
 			return;
 		}
 		
-		File[] files = file.listFiles();
+		//File[] files = file.listFiles();
+		FilenameFilter filter = new FilenameFilter(){
+
+			@Override
+			public boolean accept(File dir, String name) {
+				return !name.equals(".DS_Store");
+			}
+			
+		};
+		File[] files = file.listFiles(filter);
 		
 		// We look at all the possible algorithms.
 		for (int initMode = 0; initMode <= 1; ++initMode){
@@ -82,7 +92,9 @@ public class Main {
 					
 					IterativeImprovement itImp = new IterativeImprovement(pivotingMode, neighbourhoodMode, initMode);
 					
-					String name = INIT_MODES[initMode] + NEIGHBOURHOOD_MODES[neighbourhoodMode] + PIVOTING_MODES[pivotingMode] + ".dat";
+					String name = INIT_MODES[initMode] + NEIGHBOURHOOD_MODES[neighbourhoodMode] + PIVOTING_MODES[pivotingMode];
+					//String name = "R-avRelPer" + INIT_MODES[initMode] + NEIGHBOURHOOD_MODES[neighbourhoodMode] + PIVOTING_MODES[pivotingMode] + ".dat";
+					
 					try(BufferedWriter writer = new BufferedWriter(new FileWriter(name))){
 
 						int averageRelativePercentageDeviation = 0;
@@ -90,7 +102,10 @@ public class Main {
 						
 						for (File instanceFile : files){
 							Map<String, Object> results = itImp.findSolution(instanceFile);
+							
+							// Change this line to change the content of the results files for each algorithm:
 							writer.write(instanceFile.getName() + "\t" + results.get(RELATIVE_PERCENTAGE_DEVIATION) + "\t" + results.get(COMPUTATION_TIME) + "\t" + results.get(COST) + "\t" + results.get(BEST_KNOWN) + "\n");
+							//writer.write(results.get(RELATIVE_PERCENTAGE_DEVIATION) + "\n");
 							
 							averageRelativePercentageDeviation += (int) results.get(RELATIVE_PERCENTAGE_DEVIATION);
 							sumOfComputationTime += (long) results.get(COMPUTATION_TIME);
@@ -98,6 +113,8 @@ public class Main {
 						
 						averageRelativePercentageDeviation /= files.length;
 						writer.write(averageRelativePercentageDeviation + "\n");
+						writer.write(Long.toString(sumOfComputationTime) + "\n");
+						sumOfComputationTime /= files.length;
 						writer.write(Long.toString(sumOfComputationTime) + "\n");
 						writer.flush();
 						
