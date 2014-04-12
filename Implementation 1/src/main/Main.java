@@ -1,14 +1,15 @@
 package main;
 
-import static main.IterativeImprovement.BEST_MODE;
-import static main.IterativeImprovement.EXCHANGE_MODE;
-import static main.IterativeImprovement.FIRST_MODE;
-import static main.IterativeImprovement.INSERT_MODE;
-import static main.IterativeImprovement.RANDOM_INIT;
-import static main.IterativeImprovement.SLACK_INIT;
-import static main.IterativeImprovement.TRANSPOSE_MODE;
 
+import static main.IterativeImprovement.*;
+
+
+
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Map;
 
 public class Main {
 
@@ -17,13 +18,14 @@ public class Main {
 	 * @param args The arguments controlling the execution mode.
 	 */
 	public static void main(String[] args) {
-		
+
 		int pivotingMode = FIRST_MODE;
 		int neighbourhoodMode = TRANSPOSE_MODE;
 		int initMode = RANDOM_INIT;
 		File file = null;
-		
-		for (int i = 0; i < args.length; ++i){
+		boolean batch = false;
+
+		for (int i = 0; i < args.length && !batch; ++i){
 			switch (args[i]){
 			case "--first":
 				pivotingMode = FIRST_MODE;
@@ -49,12 +51,64 @@ public class Main {
 			case "--file":
 				file = new File(args[++i]);
 				break;
+			case "--batch":
+				file = new File(args[++i]);
+				batch = true;
+				break;
 			default:
 				System.out.println("Unknown Argument: " + args[i]);
 			}
 		}
+
+		if (batch){
+			batch(file);
+		} else {
+			new IterativeImprovement(pivotingMode, neighbourhoodMode, initMode).findSolution(file);
+		}
+	}
+
+	private static void batch(File file){
+		if (!file.isDirectory()){
+			System.out.println("The file '" + file.getName() + "' is not a directory.");
+			return;
+		}
 		
-		new IterativeImprovement(pivotingMode, neighbourhoodMode, initMode).findSolution(file);
+		File[] files = file.listFiles();
+		
+		// We look at all the possible algorithms.
+		for (int initMode = 0; initMode <= 1; ++initMode){
+			for (int neighbourhoodMode = 0; neighbourhoodMode <= 2; ++neighbourhoodMode){
+				for(int pivotingMode = 0; pivotingMode <= 1; ++pivotingMode){
+					
+					IterativeImprovement itImp = new IterativeImprovement(pivotingMode, neighbourhoodMode, initMode);
+					
+					String name = INIT_MODES[initMode] + NEIGHBOURHOOD_MODES[neighbourhoodMode] + PIVOTING_MODES[pivotingMode] + ".dat";
+					try(BufferedWriter writer = new BufferedWriter(new FileWriter(name))){
+
+						int averageRelativePercentageDeviation = 0;
+						long sumOfComputationTime = 0;
+						
+						for (File instanceFile : files){
+							Map<String, Object> results = itImp.findSolution(instanceFile);
+							writer.write(instanceFile.getName() + "\t" + results.get(RELATIVE_PERCENTAGE_DEVIATION) + "\t" + results.get(COMPUTATION_TIME) + "\t" + results.get(COST) + "\t" + results.get(BEST_KNOWN) + "\n");
+							
+							averageRelativePercentageDeviation += (int) results.get(RELATIVE_PERCENTAGE_DEVIATION);
+							sumOfComputationTime += (long) results.get(COMPUTATION_TIME);
+						}
+						
+						averageRelativePercentageDeviation /= files.length;
+						writer.write(averageRelativePercentageDeviation + "\n");
+						writer.write(Long.toString(sumOfComputationTime) + "\n");
+						writer.flush();
+						
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					
+				}
+			}
+		}
+		
 	}
 
 }

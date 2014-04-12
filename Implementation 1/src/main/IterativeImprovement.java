@@ -5,6 +5,8 @@ import initial_solution.SlackInitialSolutionGenerator;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 import neighbourhood_generator.AbstractNeighbourhoodGenerator;
@@ -27,6 +29,27 @@ public class IterativeImprovement {
 
 	public final static int RANDOM_INIT = 0;
 	public final static int SLACK_INIT = 1;
+	
+	public final static String RELATIVE_PERCENTAGE_DEVIATION = "Relative Percentage Deviation";
+	public final static String COMPUTATION_TIME = "Computation Time";
+	public final static String BEST_KNOWN = "Best Known";
+	public final static String COST = "Cost";
+	
+	public final static String[] INIT_MODES = {
+		"--random",
+		"--slack"
+	};
+	
+	public final static String[] NEIGHBOURHOOD_MODES = {
+		"--transpose",
+		"--exchange",
+		"--insert"
+	};
+	
+	public final static String[] PIVOTING_MODES = {
+		"--first",
+		"--best"
+	};
 
 
 	private int pivotingMode;
@@ -42,7 +65,7 @@ public class IterativeImprovement {
 		this.initMode = initMode;
 	}
 
-	void findSolution(File file){
+	public Map<String, Object> findSolution(File file){
 
 		// Start the timer
 		long timer = System.currentTimeMillis();
@@ -79,7 +102,17 @@ public class IterativeImprovement {
 		timer = System.currentTimeMillis() - timer;
 		int bestKnown = this.getBestKnown();
 
-		System.out.println(file.getName() + "\t" + newPermutation.getTotalWeightedTardiness() + "\t" + bestKnown + "\tin " + timer + " ms\tin " + stepCounter + " steps");
+		System.out.println(file.getName() + "\t" + this.initMode + "-" + this.neighbourhoodMode + "-" + this.pivotingMode + "\t" + newPermutation.getTotalWeightedTardiness() + "\t" + bestKnown + "\tin " + timer + " ms\tin " + stepCounter + " steps");
+		
+		// Send the results back.
+		Map<String, Object> results = new HashMap<String, Object>();
+		int relPerDev = (int) (100.0f * (float)(newPermutation.getTotalWeightedTardiness() - bestKnown) / (float)(bestKnown));
+		results.put(RELATIVE_PERCENTAGE_DEVIATION, relPerDev);
+		results.put(COMPUTATION_TIME, timer);
+		results.put(BEST_KNOWN, bestKnown);
+		results.put(COST, newPermutation.getTotalWeightedTardiness());
+		
+		return results;
 	}
 	
 
