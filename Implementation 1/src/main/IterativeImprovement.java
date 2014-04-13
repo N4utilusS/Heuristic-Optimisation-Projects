@@ -17,7 +17,13 @@ import pivoting_manager.AbstractPivotingManager;
 import pivoting_manager.BestPivotingManager;
 import pivoting_manager.FirstPivotingManager;
 
-
+/**
+ * Main class of the iterative improvement algorithm.
+ * Iterates through the solutions until the received new solution is the same as the previous one.
+ * This class uses an {@link AbstractNeighbourhoodGenerator} together with a {@link AbstractPivotingManager} to get new solutions based on the current one.
+ * @author anthonydebruyn
+ *
+ */
 public class IterativeImprovement {
 
 	public final static int TRANSPOSE_MODE = 0;
@@ -58,6 +64,12 @@ public class IterativeImprovement {
 	private Instance instance;
 
 
+	/**
+	 * The constructor receiving the functioning mode of the iterative algorithm.
+	 * @param pivotingMode The id of the pivoting mode, see the constants.
+	 * @param neighbourhoodMode The id of the neighbourhood mode, see the constants.
+	 * @param initMode The id of the first solution generation mode, see the constants.
+	 */
 	IterativeImprovement(int pivotingMode, int neighbourhoodMode, int initMode){
 		super();
 		this.pivotingMode = pivotingMode;
@@ -65,6 +77,17 @@ public class IterativeImprovement {
 		this.initMode = initMode;
 	}
 
+	/**
+	 * Get a solution from the iterative improvement algorithm.
+	 * The returned solution is a local maximum.
+	 * The mode of the algorithm must be defined with the constructor.
+	 * @param file The file of the instance of the problem.
+	 * @return A Map<String, Object> containing the properties of the computation and solution (see the constants).
+	 * RELATIVE_PERCENTAGE_DEVIATION, 
+	 * COMPUTATION_TIME, 
+	 * BEST_KNOWN, 
+	 * COST
+	 */
 	public Map<String, Object> findSolution(File file){
 
 		// Start the timer
@@ -102,6 +125,7 @@ public class IterativeImprovement {
 		timer = System.currentTimeMillis() - timer;
 		int bestKnown = this.getBestKnown();
 
+		// Print some results on the console.
 		System.out.println(file.getName() + "\t" + this.initMode + "-" + this.neighbourhoodMode + "-" + this.pivotingMode + "\t" + newPermutation.getTotalWeightedTardiness() + "\t" + bestKnown + "\tin " + timer + " ms\tin " + stepCounter + " steps");
 		
 		// Send the results back.
@@ -116,6 +140,11 @@ public class IterativeImprovement {
 	}
 	
 
+	/**
+	 * Get an instance of the pivoting manager corresponding to the chosen mode.
+	 * @param neighbourhoodGenerator The neighbourhood generator to use with the returned pivoting manager.
+	 * @return The wanted pivoting manager. If the id is not known, the default one is returned (first pivoting manager).
+	 */
 	private AbstractPivotingManager getPivotingManager(AbstractNeighbourhoodGenerator neighbourhoodGenerator) {
 		
 		AbstractPivotingManager pivotingManager = null;
@@ -134,6 +163,10 @@ public class IterativeImprovement {
 		return pivotingManager;
 	}
 
+	/**
+	 * Get an instance of the neighbourhood generator corresponding to the chosen mode.
+	 * @return The wanted neighbourhood generator. If the id is not known, the default one is returned (transpose neighbourhood generator).
+	 */
 	private AbstractNeighbourhoodGenerator getNeighbourhoodGenerator() {
 		AbstractNeighbourhoodGenerator neighbourhoodGenerator = null;
 
@@ -154,6 +187,10 @@ public class IterativeImprovement {
 		return neighbourhoodGenerator;
 	}
 
+	/**
+	 * Get an instance of the initial solution generator corresponding to the chosen mode.
+	 * @return The wanted initial solution generator. If the id is not known, the default one is returned (random initial solution generator).
+	 */
 	private InitialSolutionGenerator getInitialSolutionGenerator() {
 		InitialSolutionGenerator initialSolutionGenerator = null;
 		
@@ -172,9 +209,11 @@ public class IterativeImprovement {
 	}
 
 	/**
-	 * Get the information from the file provided, to set the size of the problem.
-	 * Get the amount of jobs and machines.
-	 * @param file The file containing the information for the instances.
+	 * Get the information from the instance file provided, to set the size of the problem.
+	 * Get the amount of jobs and machines, the processing times, the due dates, the priorities and the instance number 
+	 * (the number at the end of the filename, if there are several instances with the same number of jobs and machines).
+	 * Prints errors on the console for certain known errors, like a missing number.
+	 * @param file The file containing the information for the instance.
 	 */
 	private void getInformation(File file) {
 		int jobsAmount;
@@ -255,6 +294,10 @@ public class IterativeImprovement {
 
 	}
 
+	/**
+	 * Get the best known solution from the file containing all the best solutions.
+	 * @return An integer equal to the cost of the best solution found for the current instance.
+	 */
 	private int getBestKnown(){
 		String prefix = instance.getJobsAmount() + "x" + instance.getMachineAmount() + " " + instance.getInstanceNumber() + " ";
 		int bestKnown = 0;

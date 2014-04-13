@@ -2,9 +2,18 @@ package pivoting_manager;
 import main.Permutation;
 import neighbourhood_generator.AbstractNeighbourhoodGenerator;
 
-
+/**
+ * Pivoting manager extending {@link AbstractPivotingManager}.
+ * Selects the first better neighbour found as the next best solution.
+ * @author anthonydebruyn
+ *
+ */
 public class FirstPivotingManager extends AbstractPivotingManager {
 
+	/**
+	 * The constructor taking the neighbourhood generator to use.
+	 * @param neighbourhoodGenerator
+	 */
 	public FirstPivotingManager(AbstractNeighbourhoodGenerator neighbourhoodGenerator) {
 		super(neighbourhoodGenerator);
 	}

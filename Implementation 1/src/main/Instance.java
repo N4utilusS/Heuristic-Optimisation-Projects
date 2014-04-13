@@ -1,5 +1,11 @@
 package main;
 
+/**
+ * Represents an instance of the PFSP problem.
+ * Contains the processing times, the due dates, the priorities and the instance number if several instances have the same jobs and machines numbers.
+ * @author anthonydebruyn
+ *
+ */
 public class Instance {
 	
 	private int[][] processingTimes;
@@ -7,6 +13,13 @@ public class Instance {
 	private int[] priorities;
 	private int instanceNumber;
 	
+	/**
+	 * Constructor taking all the fields of the instance directly.
+	 * @param processingTimes The processing times of the different machines for all jobs.
+	 * @param dueDates The due dates for all the jobs.
+	 * @param priorities The priorities for all the jobs.
+	 * @param instanceNumber The instance number, if several instances have the same jobs and machines numbers.
+	 */
 	public Instance(int[][] processingTimes, int[] dueDates, int[] priorities, int instanceNumber){
 		this.processingTimes = processingTimes;
 		this.dueDates = dueDates;

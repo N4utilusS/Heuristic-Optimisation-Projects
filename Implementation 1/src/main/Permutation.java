@@ -1,5 +1,10 @@
 package main;
 
+/**
+ * The class representing a solution, a permutation of the jobs.
+ * @author anthonydebruyn
+ *
+ */
 public class Permutation {
 	private int[] jobs;
 	private int[][] completionTimes;
@@ -7,6 +12,11 @@ public class Permutation {
 	private int newValueIndex = 0;
 	private Instance instance;
 
+	/**
+	 * Creates a simple permutation, with the jobs in the order they are declared (normal order, job 1 at spot 1...).
+	 * Initialises all the vectors needed.
+	 * @param instance The instance object of the current problem.
+	 */
 	public Permutation(Instance instance){
 		super();
 		this.instance = instance;
@@ -21,6 +31,19 @@ public class Permutation {
 		this.completionTimes = new int[instance.getJobsAmount()][instance.getMachineAmount()];
 	}
 
+	/**
+	 * Creates a permutation from another one.
+	 * Clones all the vectors from the mother permutation, but not the instance object.
+	 * The newValueIndex is not copied. It is deduced in the mother permutation from the operation giving birth to this new permutation.
+	 * This value indicates the index from which the vectors need to be recalculated (the completionTimes and jobsWeightedTardiness).
+	 * This decreases resource demand on execution.</br>
+	 * Ex.: For a swap operation on the mother between jobs i and j: newValueIndex = min(mother's newValueIndex, i, j).
+	 * @param instance The instance object of the current problem.
+	 * @param jobs The vector listing the jobs in the order of the solution permutation (first job at cell 0, second at 1...).
+	 * @param otherCompletionTimes The completion times matrix from the mother permutation, to decrease resource demand.
+	 * @param jobsWeightedTardiness The computed tardiness of each job from the mother permutation.
+	 * @param newValueIndex The newValueIndex computed in the mother permutation to indicate the first index in the completion matrix and tardiness that needs recalculation.
+	 */
 	private Permutation(Instance instance, int[] jobs, int[][] otherCompletionTimes, int[] jobsWeightedTardiness, int newValueIndex){
 		this.instance = instance;
 		this.jobs = jobs.clone();
@@ -30,6 +53,11 @@ public class Permutation {
 		
 	}
 	
+	/**
+	 * Used to clone a 2D matrix of integers.
+	 * @param input The matrix we want a copy from.
+	 * @return The copy.
+	 */
 	public static int[][] deepCopyIntMatrix(int[][] input) {
 	    if (input == null)
 	        return null;
@@ -40,6 +68,11 @@ public class Permutation {
 	    return result;
 	}
 
+	/**
+	 * Computes and returns the total weighted tardiness.
+	 * Calculates the new values of the completion times matrix and tardiness vectors from the newValueIndex index.
+	 * @return The total weighted tardiness for this permutation.
+	 */
 	public int getTotalWeightedTardiness(){
 
 		// No need to recalculate if nothing has changed since the previous call.
@@ -63,6 +96,11 @@ public class Permutation {
 		return this.jobsWeightedTardiness[instance.getJobsAmount()-1];
 	}
 	
+	/**
+	 * Computes the completion times for the current permutation to the 'maxJobNumber'th job.
+	 * The parameter is mainly used in the case of the slack heuristic where we do not need to compute all the matrix.
+	 * @param maxJobNumber The maximum index of the completion times matrix to compute.
+	 */
 	private void computeCompletionTimes(int maxJobNumber){
 		maxJobNumber = Math.min(maxJobNumber, this.instance.getJobsAmount()-1);
 		maxJobNumber = Math.max(0, maxJobNumber);
@@ -89,6 +127,12 @@ public class Permutation {
 		}
 	}
 
+	/**
+	 * Creates another permutation from this one with the jobs i and j swapped.
+	 * @param i The index of the first job to be swapped.
+	 * @param j The index of the second job to be swapped.
+	 * @return The new permutation, with the newValueIndex = min(this.newValueIndex, i, j).
+	 */
 	public Permutation swap(int i, int j){
 		
 		int[] jobs = this.jobs.clone();
@@ -102,6 +146,13 @@ public class Permutation {
 		return new Permutation(this.instance, jobs, this.completionTimes, this.jobsWeightedTardiness, min);
 	}
 
+	/**
+	 * Creates another permutation from this one with the 'jobNumber'th job inserted at the 'placeNumber'th spot.
+	 * All the other jobs between the 2 are shifted.
+	 * @param jobNumber The index of the job to take.
+	 * @param placeNumber The spot number to put the job taken. These spot numbers correspond to the order of the jobs in the solution.
+	 * @return The new permutation, with the newValueIndex = min(this.newValueIndex, jobNumber, placeNumber).
+	 */
 	public Permutation insert(int jobNumber, int placeNumber){
 		int[] jobs = this.jobs.clone();
 		int temp = jobs[jobNumber];
@@ -125,13 +176,12 @@ public class Permutation {
 		return new Permutation(this.instance, jobs, this.completionTimes, this.jobsWeightedTardiness, min);
 	}
 
+	/**
+	 * Returns the size of the current solution, the number of jobs.
+	 * @return Guess what.
+	 */
 	public int size(){
 		return this.jobs.length;
-	}
-
-	public void setInstance(Instance instance) {
-		this.instance = instance;
-		this.newValueIndex = 0;
 	}
 
 	public String toString(){
@@ -148,7 +198,13 @@ public class Permutation {
 		return str + " --> " + this.getTotalWeightedTardiness();
 	}
 	
-	public int getWeightedEarlyness(int jobNumber){
+	/**
+	 * Computes and returns the weighted earliness of the permutation/solution, at 'jobNumber'th spot (0->jobsAmount-1).
+	 * The value is computed for the 'jobNumber'th job.
+	 * @param jobNumber The index of the job we want the weighted earliness from (index corresponds to the position in time of the job, 2 = 3rd job in time).
+	 * @return The value of the weighted earliness for the given job.
+	 */
+	public int getWeightedEarliness(int jobNumber){
 		if (this.newValueIndex <= jobNumber)
 			this.computeCompletionTimes(jobNumber);
 		// Here the newValueIndex is not updated to jobNumber, since we still need to update the jobsWeightedTardiness vector when 

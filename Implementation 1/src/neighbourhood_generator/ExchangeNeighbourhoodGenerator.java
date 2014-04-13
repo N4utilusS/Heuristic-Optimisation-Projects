@@ -2,6 +2,12 @@ package neighbourhood_generator;
 
 import main.Permutation;
 
+/**
+ * Neighbourhood generator extending {@link AbstractNeighbourhoodGenerator}.
+ * Generates neighbours with the exchange algorithm.
+ * @author anthonydebruyn
+ *
+ */
 public class ExchangeNeighbourhoodGenerator extends AbstractNeighbourhoodGenerator {
 
 	private int i = 0;

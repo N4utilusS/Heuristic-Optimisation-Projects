@@ -12,10 +12,21 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.Map;
 
+/**
+ * The main class of the project, receiving the arguments of the user.
+ * @author anthonydebruyn
+ *
+ */
 public class Main {
 
 	/**
-	 * The main class of the project, receiving the arguments of the user.
+	 * The starting point of the program. Reads the arguments and creates the wanted modes for the algorithm.</br>
+	 * The '--first' and '--best' strings can be used to define the pivoting mode at launch.</br>
+	 * The '--transpose', '--exchange' and '--insert' for the neighbourhood mode.</br>
+	 * The '--random_init' and '--slack_init' for the initial solution generation mode.</br>
+	 * </br>
+	 * The '--file' string can be used followed by a filename to specify an instance file.</br>
+	 * The '--batch' string can be used to specify a directory containing instance files.</br>
 	 * @param args The arguments controlling the execution mode.
 	 */
 	public static void main(String[] args) {
@@ -68,13 +79,20 @@ public class Main {
 		}
 	}
 
+	/**
+	 * This method is used in case the batch string is used with a directory name.
+	 * It calls each type of algorithm on each instance in the specified folder.
+	 * The results are written in files with the algorithms modes as names.
+	 * These files contain thus a line per instance.
+	 * @param file The {@link File} object representing the folder containing all the instances.
+	 */
 	private static void batch(File file){
 		if (!file.isDirectory()){
 			System.out.println("The file '" + file.getName() + "' is not a directory.");
 			return;
 		}
 		
-		//File[] files = file.listFiles();
+		// A filter to avoid the system hidden files, like '.DS_Store' on MAC OS.
 		FilenameFilter filter = new FilenameFilter(){
 
 			@Override
@@ -103,23 +121,26 @@ public class Main {
 						for (File instanceFile : files){
 							Map<String, Object> results = itImp.findSolution(instanceFile);
 							
-							// Change this line to change the content of the results files for each algorithm:
+							// Change these 2 lines to change the content of the results files for each algorithm:
 							writer.write(instanceFile.getName() + "\t" + results.get(RELATIVE_PERCENTAGE_DEVIATION) + "\t" + results.get(COMPUTATION_TIME) + "\t" + results.get(COST) + "\t" + results.get(BEST_KNOWN) + "\n");
-							writer2.write(results.get(RELATIVE_PERCENTAGE_DEVIATION) + "\n");
+							writer2.write(results.get(RELATIVE_PERCENTAGE_DEVIATION) + "\n");	// Files used mainly to compute the p-values, contain only the relative percentage deviations.
 							
 							averageRelativePercentageDeviation += (int) results.get(RELATIVE_PERCENTAGE_DEVIATION);
 							sumOfComputationTime += (long) results.get(COMPUTATION_TIME);
 						}
 						
+						// At the end of each file:
 						averageRelativePercentageDeviation /= files.length;
-						writer.write(averageRelativePercentageDeviation + "\n");
-						writer.write(Long.toString(sumOfComputationTime) + "\n");
+						writer.write(averageRelativePercentageDeviation + "\n");	// The average relative percentage deviation for the algorithm.
+						writer.write(Long.toString(sumOfComputationTime) + "\n");	// The sum of the computation times for the algorithm.
 						sumOfComputationTime /= files.length;
-						writer.write(Long.toString(sumOfComputationTime) + "\n");
+						writer.write(Long.toString(sumOfComputationTime) + "\n");	// The average of the computation times for the algorithm.
 						writer.flush();
+						writer2.flush();
 						
 					} catch (IOException e) {
 						e.printStackTrace();
+						System.out.println(e.getMessage());
 					}
 					
 				}

@@ -13,6 +13,7 @@ public interface InitialSolutionGenerator {
 
 	/**
 	 * Generates the first solution to be used by the algorithm, and returns it.
+	 * Must be implemented in each implementing class.
 	 * @param instance The instance object of the current problem.
 	 * @return The first solution (permutation).
 	 * @see Permutation

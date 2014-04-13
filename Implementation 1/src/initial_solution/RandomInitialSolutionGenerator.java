@@ -21,8 +21,9 @@ public class RandomInitialSolutionGenerator implements InitialSolutionGenerator 
 	}
 
 	/**
-	 * Shuffles the array, following the Fisher–Yates algorithm.
+	 * Shuffles the permutation, following the Fisher–Yates algorithm.
 	 * @param p The permutation to shuffle.
+	 * @return A new permutation object, the shuffled version of the passed one.
 	 */
 	static Permutation shuffleArray(Permutation p)
 	{
