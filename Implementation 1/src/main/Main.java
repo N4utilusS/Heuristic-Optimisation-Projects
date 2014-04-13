@@ -93,9 +93,9 @@ public class Main {
 					IterativeImprovement itImp = new IterativeImprovement(pivotingMode, neighbourhoodMode, initMode);
 					
 					String name = INIT_MODES[initMode] + NEIGHBOURHOOD_MODES[neighbourhoodMode] + PIVOTING_MODES[pivotingMode];
-					//String name = "R-avRelPer" + INIT_MODES[initMode] + NEIGHBOURHOOD_MODES[neighbourhoodMode] + PIVOTING_MODES[pivotingMode] + ".dat";
+					String nameAvRelPerDev = "R-avRelPer" + INIT_MODES[initMode] + NEIGHBOURHOOD_MODES[neighbourhoodMode] + PIVOTING_MODES[pivotingMode] + ".dat";
 					
-					try(BufferedWriter writer = new BufferedWriter(new FileWriter(name))){
+					try(BufferedWriter writer = new BufferedWriter(new FileWriter(name)); BufferedWriter writer2 = new BufferedWriter(new FileWriter(nameAvRelPerDev));){
 
 						int averageRelativePercentageDeviation = 0;
 						long sumOfComputationTime = 0;
@@ -105,7 +105,7 @@ public class Main {
 							
 							// Change this line to change the content of the results files for each algorithm:
 							writer.write(instanceFile.getName() + "\t" + results.get(RELATIVE_PERCENTAGE_DEVIATION) + "\t" + results.get(COMPUTATION_TIME) + "\t" + results.get(COST) + "\t" + results.get(BEST_KNOWN) + "\n");
-							//writer.write(results.get(RELATIVE_PERCENTAGE_DEVIATION) + "\n");
+							writer2.write(results.get(RELATIVE_PERCENTAGE_DEVIATION) + "\n");
 							
 							averageRelativePercentageDeviation += (int) results.get(RELATIVE_PERCENTAGE_DEVIATION);
 							sumOfComputationTime += (long) results.get(COMPUTATION_TIME);

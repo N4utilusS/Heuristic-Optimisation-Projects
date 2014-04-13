@@ -5,7 +5,12 @@ import java.util.Random;
 import main.Instance;
 import main.Permutation;
 
-
+/**
+ * Class used to return a random first solution.
+ * A first permutation is created, then shuffled with the Fisher-Yates algorithm.
+ * @author anthonydebruyn
+ *
+ */
 public class RandomInitialSolutionGenerator implements InitialSolutionGenerator {
 
 	@Override

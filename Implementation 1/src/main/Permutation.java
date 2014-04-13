@@ -19,17 +19,25 @@ public class Permutation {
 
 		this.jobsWeightedTardiness = new int[amountOfJobs];
 		this.completionTimes = new int[instance.getJobsAmount()][instance.getMachineAmount()];
-		this.getTotalWeightedTardiness();
 	}
 
 	private Permutation(Instance instance, int[] jobs, int[][] otherCompletionTimes, int[] jobsWeightedTardiness, int newValueIndex){
 		this.instance = instance;
-		this.jobs = jobs;
-		this.completionTimes = otherCompletionTimes.clone();
+		this.jobs = jobs.clone();
+		this.completionTimes = deepCopyIntMatrix(otherCompletionTimes);
 		this.jobsWeightedTardiness = jobsWeightedTardiness.clone();
 		this.newValueIndex = newValueIndex;
 		
-		this.getTotalWeightedTardiness();
+	}
+	
+	public static int[][] deepCopyIntMatrix(int[][] input) {
+	    if (input == null)
+	        return null;
+	    int[][] result = new int[input.length][];
+	    for (int r = 0; r < input.length; r++) {
+	        result[r] = input[r].clone();
+	    }
+	    return result;
 	}
 
 	public int getTotalWeightedTardiness(){
@@ -38,6 +46,7 @@ public class Permutation {
 		if (this.newValueIndex == instance.getJobsAmount())
 			return this.jobsWeightedTardiness[instance.getJobsAmount()-1];
 
+		// Compute the completion times.
 		this.computeCompletionTimes(this.instance.getJobsAmount()-1);
 
 		// Compute the tardiness of each job.
@@ -51,7 +60,7 @@ public class Permutation {
 		// Thanks to this, each time this method will be called, no calculation will be needed to return the cost.
 		this.newValueIndex = instance.getJobsAmount();
 
-		return this.jobsWeightedTardiness[instance.getMachineAmount()-1];
+		return this.jobsWeightedTardiness[instance.getJobsAmount()-1];
 	}
 	
 	private void computeCompletionTimes(int maxJobNumber){
@@ -86,7 +95,11 @@ public class Permutation {
 		int temp = jobs[i];
 		jobs[i] = jobs[j];
 		jobs[j] = temp;
-		return new Permutation(this.instance, jobs, this.completionTimes, this.jobsWeightedTardiness, Math.min(i, j));
+		
+		int min = Math.min(i, j);
+		min = Math.min(this.newValueIndex, min);
+		
+		return new Permutation(this.instance, jobs, this.completionTimes, this.jobsWeightedTardiness, min);
 	}
 
 	public Permutation insert(int jobNumber, int placeNumber){
@@ -105,7 +118,11 @@ public class Permutation {
 
 
 		jobs[placeNumber] = temp;
-		return new Permutation(this.instance, jobs, this.completionTimes, this.jobsWeightedTardiness, Math.min(jobNumber, placeNumber));
+		
+		int min = Math.min(jobNumber, placeNumber);
+		min = Math.min(this.newValueIndex, min);
+		
+		return new Permutation(this.instance, jobs, this.completionTimes, this.jobsWeightedTardiness, min);
 	}
 
 	public int size(){
