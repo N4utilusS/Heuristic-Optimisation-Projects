@@ -84,7 +84,7 @@ footnotesep=50mm
   escapeinside={\%*}{*)},            % if you want to add a comment within your code 
   morekeywords={*,...}               % if you want to add more keywords to the set 
 } 
-
+\usepackage{amssymb}
 
 \newcommand*{\course}{\fbox{INFO-H-413}} % Generic publisher logo
 
@@ -128,12 +128,56 @@ footnotesep=50mm
 \section{Introduction}
 The goal of this assignment was to...
 
-\section{Code Use}
+\section{Implementation}
+The code was implemented in Java, with an object oriented architecture. A \emph{Main} class receives the arguments and defines the modes to use with the algorithm from these. The \emph{IterativeImprovement} class is the main class of the algorithm. It is constructed in the \emph{Main} class with the modes received earlier.\\
 
+In this class, there is a loop that goes on until the new solution is the same as the previous one (same pointer). The main class of the algorithm uses 3 other types of class, separated in corresponding packages:
+\begin{description}
+	\item[Initial Solution Generators:] These classes implement all an interface to behave the same way. They are used to generate a first solution for the algorithm. Each class returns another type of solution.
+
+	\item[Neighbourhood Generators:] These generate the neighbourhood for each permutation/solution.
+	\item[Pivoting Managers:] These manage the way the neighbourhoods are used, and need an instance of neighbourhood generator. For instance, we have one pivoting manager for the first pivoting mode that returns the first better solution it gets from the generator. The managers return the same solution if no improvement was possible.
+\end{description}
+
+There are also a class that represent a permutation/solution, and a class for the problem instances.\\
+
+Please read consult the javadoc for more information on the internal behaviour.
+
+\section{Code Use}
+To launch the algorithm with a desired mode, launch the jar with the following arguments:
+
+\begin{description}
+	\item[Initial Solution Mode:]~
+		\begin{description}
+		\item[$--random\_init:$] To generate an initial random solution. See the doc for the info on the corresponding algorithm.
+		\item[$--slack\_init:$] To generate an initial solution with the SLACK heuristic.
+		\end{description}
+		
+	\item[Neighbourhood Generation Mode:]~
+		\begin{description}
+		\item[$--transpose:$] Generate neighbourhood with a transpose method.
+		\item[$--exchange:$] Exchange method.
+		\item[$--insert:$] Insert method.
+		\end{description}
+		
+	\item[Pivoting Mode:]~
+		\begin{description}
+		\item[$--first:$] Take the first solution from the neighbourhood with a better cost.
+		\item[$--best:$] Take the best solution from the neighbourhood with a better cost. If there are more than one solutions, take the first met.
+		\end{description}
+		
+\end{description}
+
+You can also choose to launch the algorithm on a single file or on a folder containing several instance files:
+\begin{description}
+	\item[$--file ~\{filepath\}:$] Launch on a single file. The results are only printed on the console.
+	\item[$--batch ~\{directory path\}:$] Launch on a folder. The results are written in files, each file name containing the mode of the algorithm. All the algorithm combinations are tested on all the instances. The intermediate results are printed on the console like for the single file.
+\end{description}
 
 \section{Exercise 1.1}
 
 \subsection{The Results}
+First of all, all the results are in the files with the different modes as names, like "--random--exchange--best". The if
 We list here the average percentage deviation from the best solutions for each algorithm tested, along with the average computation time:
 
 \begin{figure}[H]
@@ -163,7 +207,9 @@ We see that the transpose mode for the neighbourhood generation is the worst, an
 
 The reason behind the difference between these 3 modes becomes clear when we consider the size of the respective neighbourhood. If N is the number of jobs and p is the current permutation, we get these sizes:
 $$|N_{transpose}(p)| = N-1$$
-$$|N_{exchange}(p)| = $$
+$$|N_{exchange}(p)| = \sum_{i=0}^{N-2}{N-i-1} = (N-1)^2 - \frac{(N-1)(N-2)}{2} = \frac{N(N-1)}{2}$$
+$$|N_{insert}(p)| = (N-1)^2$$
+The size of the insert neighbourhood is the biggest, and thus helps not getting stuck easily in a local maximum. The bigger the size, the smaller the probability for a certain permutation to be a local maximum.\\
 
 We observe that the SLACK heuristic makes the time cost decrease everywhere, except for the transpose mode. As an attempt to explain this, we could say that the size of the neighbourhood, being a lot smaller than the other mode (linear in the number of jobs), has a much lower impact on the time cost. The real impact comes from the heuristic at the beginning.\\
 
