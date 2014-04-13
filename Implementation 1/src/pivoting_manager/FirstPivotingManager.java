@@ -12,7 +12,7 @@ public class FirstPivotingManager extends AbstractPivotingManager {
 
 	/**
 	 * The constructor taking the neighbourhood generator to use.
-	 * @param neighbourhoodGenerator
+	 * @param neighbourhoodGenerator The neighbourhood generator to use.
 	 */
 	public FirstPivotingManager(AbstractNeighbourhoodGenerator neighbourhoodGenerator) {
 		super(neighbourhoodGenerator);
