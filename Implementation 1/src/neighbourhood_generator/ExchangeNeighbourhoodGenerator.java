@@ -22,7 +22,7 @@ public class ExchangeNeighbourhoodGenerator extends AbstractNeighbourhoodGenerat
 			j = i + 1;
 		}
 		
-		if (this.i == permutation.size()-1)
+		if (this.i >= permutation.size()-1)
 			return null;
 		
 		return permutation.swap(i, j++);

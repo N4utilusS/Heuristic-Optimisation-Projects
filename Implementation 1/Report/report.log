@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.3-1.40.12 (TeX Live 2011) (format=pdflatex 2011.7.3)  13 APR 2014 23:23
+This is pdfTeX, Version 3.1415926-2.3-1.40.12 (TeX Live 2011) (format=pdflatex 2011.7.3)  14 APR 2014 17:30
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -609,136 +609,151 @@ Underfull \hbox (badness 10000) in paragraph at lines 142--143
 
  []
 
-LaTeX Font Info:    Try loading font information for OT1+ppl on input line 152.
+LaTeX Font Info:    Font shape `T1/ppl/bx/n' in size <12> not available
+(Font)              Font shape `T1/ppl/b/n' tried instead on input line 144.
+
+Underfull \hbox (badness 10000) in paragraph at lines 145--146
+
+ []
+
+LaTeX Font Info:    Try loading font information for OT1+ppl on input line 155.
 
 (/usr/local/texlive/2011/texmf-dist/tex/latex/psnfss/ot1ppl.fd
 File: ot1ppl.fd 2001/06/04 font definitions for OT1/ppl.
 )
-LaTeX Font Info:    Try loading font information for OML+zplm on input line 152
+LaTeX Font Info:    Try loading font information for OML+zplm on input line 155
 .
 
 (/usr/local/texlive/2011/texmf-dist/tex/latex/psnfss/omlzplm.fd
 File: omlzplm.fd 2002/09/08 Fontinst v1.914 font definitions for OML/zplm.
 )
-LaTeX Font Info:    Try loading font information for OMS+zplm on input line 152
+LaTeX Font Info:    Try loading font information for OMS+zplm on input line 155
 .
 
 (/usr/local/texlive/2011/texmf-dist/tex/latex/psnfss/omszplm.fd
 File: omszplm.fd 2002/09/08 Fontinst v1.914 font definitions for OMS/zplm.
 )
-LaTeX Font Info:    Try loading font information for OMX+zplm on input line 152
+LaTeX Font Info:    Try loading font information for OMX+zplm on input line 155
 .
 
 (/usr/local/texlive/2011/texmf-dist/tex/latex/psnfss/omxzplm.fd
 File: omxzplm.fd 2002/09/08 Fontinst v1.914 font definitions for OMX/zplm.
 )
-LaTeX Font Info:    Try loading font information for OT1+zplm on input line 152
+LaTeX Font Info:    Try loading font information for OT1+zplm on input line 155
 .
 
 (/usr/local/texlive/2011/texmf-dist/tex/latex/psnfss/ot1zplm.fd
 File: ot1zplm.fd 2002/09/08 Fontinst v1.914 font definitions for OT1/zplm.
 )
 LaTeX Font Info:    Font shape `U/msa/m/n' will be
-(Font)              scaled to size 10.42007pt on input line 152.
+(Font)              scaled to size 10.42007pt on input line 155.
 LaTeX Font Info:    Font shape `U/msa/m/n' will be
-(Font)              scaled to size 7.91925pt on input line 152.
+(Font)              scaled to size 7.91925pt on input line 155.
 LaTeX Font Info:    Font shape `U/msa/m/n' will be
-(Font)              scaled to size 6.25204pt on input line 152.
+(Font)              scaled to size 6.25204pt on input line 155.
 LaTeX Font Info:    Font shape `U/msb/m/n' will be
-(Font)              scaled to size 10.42007pt on input line 152.
+(Font)              scaled to size 10.42007pt on input line 155.
 LaTeX Font Info:    Font shape `U/msb/m/n' will be
-(Font)              scaled to size 7.91925pt on input line 152.
+(Font)              scaled to size 7.91925pt on input line 155.
 LaTeX Font Info:    Font shape `U/msb/m/n' will be
-(Font)              scaled to size 6.25204pt on input line 152.
-LaTeX Font Info:    Font shape `T1/ppl/bx/n' in size <12> not available
-(Font)              Font shape `T1/ppl/b/n' tried instead on input line 179.
-
-Underfull \hbox (badness 10000) in paragraph at lines 180--181
-
- []
-
-[2]
-Underfull \hbox (badness 10000) in paragraph at lines 207--208
+(Font)              scaled to size 6.25204pt on input line 155.
+ [2]
+Underfull \hbox (badness 10000) in paragraph at lines 186--187
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 212--214
+Underfull \hbox (badness 10000) in paragraph at lines 213--214
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 215--216
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 220--221
+Underfull \hbox (badness 10000) in paragraph at lines 218--220
 
  []
 
 [3]
-Underfull \hbox (badness 10000) in paragraph at lines 222--223
+Underfull \hbox (badness 10000) in paragraph at lines 221--222
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 226--227
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 228--229
 
  []
 
 LaTeX Font Info:    Font shape `U/msa/m/n' will be
-(Font)              scaled to size 8.33606pt on input line 228.
+(Font)              scaled to size 8.33606pt on input line 234.
 LaTeX Font Info:    Font shape `U/msa/m/n' will be
-(Font)              scaled to size 5.21004pt on input line 228.
+(Font)              scaled to size 5.21004pt on input line 234.
 LaTeX Font Info:    Font shape `U/msb/m/n' will be
-(Font)              scaled to size 8.33606pt on input line 228.
+(Font)              scaled to size 8.33606pt on input line 234.
 LaTeX Font Info:    Font shape `U/msb/m/n' will be
-(Font)              scaled to size 5.21004pt on input line 228.
+(Font)              scaled to size 5.21004pt on input line 234.
 [4]
-Overfull \hbox (20.2346pt too wide) in paragraph at lines 259--276
+Overfull \hbox (20.2346pt too wide) in paragraph at lines 265--282
  [] 
  []
 
 
-Overfull \hbox (28.45274pt too wide) detected at line 280
+Overfull \hbox (28.45274pt too wide) detected at line 286
  [] 
  []
 
 
-Overfull \hbox (6.47435pt too wide) in paragraph at lines 285--302
+Overfull \hbox (6.47435pt too wide) in paragraph at lines 291--308
  [] 
  []
 
 
-Overfull \hbox (28.45274pt too wide) detected at line 306
+Overfull \hbox (28.45274pt too wide) detected at line 312
  [] 
  []
 
 [5]
-Underfull \hbox (badness 10000) in paragraph at lines 309--310
+Underfull \hbox (badness 10000) in paragraph at lines 315--316
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 378--379
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 380--381
 
  []
 
 [6
 
 
-] (./report.aux) ) 
+] [7] (./report.aux) ) 
 Here is how much of TeX's memory you used:
- 7131 strings out of 493633
- 95827 string characters out of 3143378
- 285291 words of memory out of 3000000
- 10295 multiletter control sequences out of 15000+200000
+ 7134 strings out of 493633
+ 95863 string characters out of 3143378
+ 287291 words of memory out of 3000000
+ 10298 multiletter control sequences out of 15000+200000
  42984 words of font info for 94 fonts, out of 3000000 for 9000
  831 hyphenation exceptions out of 8191
- 38i,8n,41p,500b,1964s stack positions out of 5000i,500n,10000p,200000b,50000s
-{/usr/local/texlive/2011/texmf-dist/fonts/enc/dvips/base/8r.e
-nc}</usr/local/texlive/2011/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb
-></usr/local/texlive/2011/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb>
-</usr/local/texlive/2011/texmf-dist/fonts/type1/public/mathpazo/fplmr.pfb></usr
-/local/texlive/2011/texmf-dist/fonts/type1/public/mathpazo/fplmri.pfb></usr/loc
-al/texlive/2011/texmf-dist/fonts/type1/urw/palatino/uplb8a.pfb></usr/local/texl
-ive/2011/texmf-dist/fonts/type1/urw/palatino/uplr8a.pfb></usr/local/texlive/201
-1/texmf-dist/fonts/type1/urw/palatino/uplri8a.pfb>
-Output written on report.pdf (6 pages, 92011 bytes).
+ 38i,8n,41p,595b,1964s stack positions out of 5000i,500n,10000p,200000b,50000s
+{/usr/local/texlive/2011/texmf-dist/fonts/enc/dvips/base/
+8r.enc}</usr/local/texlive/2011/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10
+.pfb></usr/local/texlive/2011/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.
+pfb></usr/local/texlive/2011/texmf-dist/fonts/type1/public/mathpazo/fplmr.pfb><
+/usr/local/texlive/2011/texmf-dist/fonts/type1/public/mathpazo/fplmri.pfb></usr
+/local/texlive/2011/texmf-dist/fonts/type1/urw/palatino/uplb8a.pfb></usr/local/
+texlive/2011/texmf-dist/fonts/type1/urw/palatino/uplr8a.pfb></usr/local/texlive
+/2011/texmf-dist/fonts/type1/urw/palatino/uplri8a.pfb>
+Output written on report.pdf (7 pages, 95889 bytes).
 PDF statistics:
- 52 PDF objects out of 1000 (max. 8388607)
- 36 compressed objects within 1 object stream
+ 57 PDF objects out of 1000 (max. 8388607)
+ 40 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 

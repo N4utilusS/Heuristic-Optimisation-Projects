@@ -13,6 +13,8 @@ import neighbourhood_generator.AbstractNeighbourhoodGenerator;
 import neighbourhood_generator.ExchangeNeighbourhoodGenerator;
 import neighbourhood_generator.InsertNeighbourhoodGenerator;
 import neighbourhood_generator.TransposeNeighbourhoodGenerator;
+import neighbourhood_generator.VNDTransposeExchangeInsert;
+import neighbourhood_generator.VNDTransposeInsertExchange;
 import pivoting_manager.AbstractPivotingManager;
 import pivoting_manager.BestPivotingManager;
 import pivoting_manager.FirstPivotingManager;
@@ -29,6 +31,8 @@ public class IterativeImprovement {
 	public final static int TRANSPOSE_MODE = 0;
 	public final static int EXCHANGE_MODE = 1;
 	public final static int INSERT_MODE = 2;
+	public final static int VND_TRANSPOSE_EXCHANGE_INSERT_MODE = 3;
+	public final static int VND_TRANSPOSE_INSERT_EXCHANGE_MODE = 4;
 
 	public final static int FIRST_MODE = 0;
 	public final static int BEST_MODE = 1;
@@ -49,7 +53,9 @@ public class IterativeImprovement {
 	public final static String[] NEIGHBOURHOOD_MODES = {
 		"--transpose",
 		"--exchange",
-		"--insert"
+		"--insert",
+		"--vnd_tei",
+		"--vnd_tie"
 	};
 	
 	public final static String[] PIVOTING_MODES = {
@@ -179,6 +185,12 @@ public class IterativeImprovement {
 			break;
 		case INSERT_MODE:
 			neighbourhoodGenerator = new InsertNeighbourhoodGenerator();
+			break;
+		case VND_TRANSPOSE_EXCHANGE_INSERT_MODE:
+			neighbourhoodGenerator = new VNDTransposeExchangeInsert();
+			break;
+		case VND_TRANSPOSE_INSERT_EXCHANGE_MODE:
+			neighbourhoodGenerator = new VNDTransposeInsertExchange();
 			break;
 		default:
 			neighbourhoodGenerator = new TransposeNeighbourhoodGenerator();

@@ -16,7 +16,7 @@ public abstract class AbstractNeighbourhoodGenerator {
 	 * Calls the reset method if a new permutation is given, to reset the neighbourhood search.
 	 * Returns the next neighbour for the given permutation.
 	 * @param permutation The permutation we want the neighbours from.
-	 * @return The next neighbour for the given permutation.
+	 * @return The next neighbour for the given permutation, or null if no next neighbour.
 	 */
 	public Permutation getNextNeighbour(Permutation permutation){
 		if (this.permutation == null || this.permutation != permutation){

@@ -141,7 +141,10 @@ In this class, there is a loop that goes on until the new solution is the same a
 
 There are also a class that represent a permutation/solution, and a class for the problem instances.\\
 
-Please read consult the javadoc for more information on the internal behaviour.
+\subsection{Addons for the exercise 1.2}
+The second part of the implementation took much less time to end, thanks to the object oriented programming. Only 2 new classes for the 2 new neighbourhood generators were needed. New constants were added in the algorithm main class to enable the use of the new modes. In the main class, new arguments cases were added to take them into account, and a new method was added for the batch process of the instances with the VND approach (same as the other one, but with other modes).\\
+
+Please consult the javadoc for more information on the internal behaviour.
 
 \section{Code Use}
 To launch the algorithm with a desired mode, launch the jar with the following arguments:
@@ -158,6 +161,8 @@ To launch the algorithm with a desired mode, launch the jar with the following a
 		\item[$--transpose:$] Generate neighbourhood with a transpose method.
 		\item[$--exchange:$] Exchange method.
 		\item[$--insert:$] Insert method.
+		\item[$--vnd\_tei:$] Variable neighbourhood descent, transpose$\rightarrow$exchange$\rightarrow$insert.
+		\item[$--vnd\_tie:$] Variable neighbourhood descent, transpose$\rightarrow$insert$\rightarrow$exchange.
 		\end{description}
 		
 	\item[Pivoting Mode:]~
@@ -172,6 +177,7 @@ You can also choose to launch the algorithm on a single file or on a folder cont
 \begin{description}
 	\item[$--file ~\{filepath\}:$] Launch on a single file. The results are only printed on the console.
 	\item[$--batch ~\{directory path\}:$] Launch on a folder. The results are written in files, each file name containing the mode of the algorithm. All the algorithm combinations are tested on all the instances. The intermediate results are printed on the console like for the single file.
+	\item[$--batch\_vnd ~\{directory path\}:$] Same as previous one, but test on all the VND algorithms.
 \end{description}
 
 \section{Exercise 1.1}
@@ -232,8 +238,8 @@ l <- read.table("R-avRelPer--slack--transpose--first.dat")$V1
 results <- c(a,b,c,d,e,f,g,h,i,j,k,l)
 results <- array(results, dim=c(60,12))
 
-test = numeric(length = 60)
-test2 = numeric(length = 60)
+test = numeric(length = 66)
+test2 = numeric(length = 66)
 
 x = 1
 for (i in 1:11) {
@@ -312,5 +318,67 @@ We can see on the figures that a lot of values are below the threshold $\alpha$.
 
 
 \section{Exercise 1.2}
+
+\subsection{The results}
+
+\begin{figure}[H]
+\begin{center}
+	\begin{tabular}{|c|c|c|} \hline
+		Algorithm & APD & ACT(ms) \\ \hline \hline
+		
+		--random--vnd\_tei--first		& 8		& 2270 \\ \hline
+		--random--vnd\_tie--first		& 9		& 4476 \\ \hline
+		--slack--vnd\_tei--first		& 12		& 1675 \\ \hline
+		--slack--vnd\_tie--first		& 9		& 3058 \\ \hline
+
+	\end{tabular}
+\end{center}
+\caption{The APD and ACT for each algorithm (VND).}
+\label{results vnd}
+\end{figure}
+
+We can see here (figure \ref{results vnd}) that the means are quite close to each other. The 3rd algorithm is the worst, but not by far. Putting the insert neighbourhood in second place seems to increase the computation time. If we take the same number of missing better neighbour in the insert and exchange neighbourhood (if we look at the entire neighbourhood with no luck x times), then more time is elapsed for the insert mode than the exchange mode (since the neighbourhood size is bigger). So more time is elapsed before entering the third kind of neighbourhood.
+
+\subsection{Difference between the solutions}
+
+\begin{figure}[H]
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|} \hline
+	
+	& 1 & 2 & 3 & 4 \\ \hline \hline
+	
+	1 & & 0.2743695 & 0.00536978 & 0.1269593 \\ \hline
+	2 & & & 0.01019433 & 0.9354282 \\ \hline
+	3 & & & & 0.08984315 \\ \hline
+	4 & & & & \\ \hline
+
+\end{tabular}
+\end{center}
+\caption{P-values for each combination of algorithms (Student t-test). Paired test, with each possible pair of algorithms.}
+\label{pv vnd st}
+\end{figure}
+
+\begin{figure}[H]
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|} \hline
+	
+	& 1 & 2 & 3 & 4 \\ \hline \hline
+	
+	1 & & 0.06738478 & 0.001592057 & 0.006999513 \\ \hline
+	2 & & & 0.005924327 & 0.9682321 \\ \hline
+	3 & & & & 0.1793561 \\ \hline
+	4 & & & & \\ \hline
+
+\end{tabular}
+\end{center}
+\caption{P-values for each combination of algorithms (Wilcoxon test). Paired test, with each possible pair of algorithms.}
+\label{pv vnd wil}
+\end{figure}
+
+If we take a significance level $\alpha = 0.05$, we see that the values are what we expected from looking at figure \ref{results vnd}. The figure \ref{pv vnd st} and \ref{pv vnd wil} are almost similar in terms of conclusions. The only difference is that the 1x4 combination is below the threshold for the Wilcoxon Test, and above for the Student t-test.\\
+
+We can conclude that the quality of the two first algorithms (the 2 different VND approach with random initial solution) looks quite similar. Same goes for the 2 algorithms with the SLACK initial solution heuristic (less similar if we look at the Student t-test, more if we look at the Wilcoxon Test).\\
+
+A difference in quality between the two first solution approach is more present for the TEI order of neighbourhood, than for the TIE where the quality is almost the same.
 
 \end{document}
