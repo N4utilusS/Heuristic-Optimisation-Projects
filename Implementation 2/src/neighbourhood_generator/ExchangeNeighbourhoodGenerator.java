@@ -4,11 +4,11 @@ import main.Permutation;
 
 /**
  * Neighbourhood generator extending {@link AbstractNeighbourhoodGenerator}.
- * Generates neighbours with the insert algorithm.
+ * Generates neighbours with the exchange algorithm.
  * @author anthonydebruyn
  *
  */
-public class InsertNeighbourhoodGenerator extends AbstractNeighbourhoodGenerator {
+public class ExchangeNeighbourhoodGenerator extends AbstractNeighbourhoodGenerator {
 
 	private int i = 0;
 	private int j = 1;
@@ -17,23 +17,17 @@ public class InsertNeighbourhoodGenerator extends AbstractNeighbourhoodGenerator
 	public Permutation getNextNeighbour(Permutation permutation){
 		super.getNextNeighbour(permutation);
 		
-		if (this.i-1 == this.j)
-			j = j + 2;
-		
 		if (this.j == permutation.size()){
-			i++;
-			j = 0;
+			++i;
+			j = i + 1;
 		}
 		
-		if (this.i-1 == this.j)	// For the case when i=1 and j=0, just after being entered for the first time in the previous if.
-			j = j + 2;
-		
-		if (this.i == permutation.size())
+		if (this.i >= permutation.size()-1)
 			return null;
 		
-		return permutation.insert(i, j++);
+		return permutation.swap(i, j++);
 	}
-	
+
 	@Override
 	void resetNeighbourhood() {
 		this.i = 0;

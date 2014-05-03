@@ -126,7 +126,7 @@ footnotesep=50mm
 \newpage
 
 \section{Introduction}
-The goal of this assignment was to...
+The goal of this assignment was to implement iterative improvement algorithms, and compare their quality of solution. 
 
 \section{Implementation}
 The code was implemented in Java, with an object oriented architecture. A \emph{Main} class receives the arguments and defines the modes to use with the algorithm from these. The \emph{IterativeImprovement} class is the main class of the algorithm. It is constructed in the \emph{Main} class with the modes received earlier.\\
@@ -147,7 +147,7 @@ The second part of the implementation took much less time to end, thanks to the 
 Please consult the javadoc for more information on the internal behaviour.
 
 \section{Code Use}
-To launch the algorithm with a desired mode, launch the jar with the following arguments:
+The best\_known file must be in the root folder of the project. To launch the algorithm with a desired mode, launch the jar with the following arguments:
 
 \begin{description}
 	\item[Initial Solution Mode:]~
@@ -182,7 +182,7 @@ You can also choose to launch the algorithm on a single file or on a folder cont
 
 \section{Exercise 1.1}
 
-\subsection{The Results}
+\subsection{The Results (arguments: "--batch Instances")}
 First of all, all the results are in the files with the different modes as names, like "--random--exchange--best". The first column is the name of the instance, the 2nd is the relative percentage deviation, the third is the time in ms to compute the final solution, the fourth is the cost of this solution, and the fifth is the cost of the best solution known.\\
 
 We list here the average percentage deviation from the best solutions for each algorithm tested, along with the average computation time:
@@ -319,7 +319,7 @@ We can see on the figures that a lot of values are below the threshold $\alpha$.
 
 \section{Exercise 1.2}
 
-\subsection{The results}
+\subsection{The results (arguments: "--batch\_vnd Instances")}
 
 \begin{figure}[H]
 \begin{center}
