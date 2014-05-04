@@ -85,7 +85,7 @@ footnotesep=50mm
   morekeywords={*,...}               % if you want to add more keywords to the set 
 } 
 \usepackage{amssymb}
-\usepackage[]{algorithm2e}
+\usepackage[boxed]{algorithm2e}
 
 \newcommand*{\course}{\fbox{INFO-H-413}} % Generic publisher logo
 
@@ -162,6 +162,12 @@ of Operational Research 1996;91:124–43.}, an article referenced in \emph{Eva V
 
 The first solution of the algorithm is obtained with the SLACK heuristic, and the neighbourhood used is the insertion neighbourhood. These offered very good results in the first implementation exercise.\\
 
+The first temperature is obtained by making a first exploration of the neighbourhood with the first solution, and taking the average cost increase in the worsening solutions only. This average was then used with the desired initial acceptance ratio to compute the initial temperature:
+
+$$T_0 = \frac{-\overline{\Delta}}{\ln{F_0}}$$, with
+
+$$\overline{\Delta} = \sum_{worsening ~solutions ~s'}{cost(s') - cost(s)}$$, where $s$ is the initial solution.\\
+
 The termination condition is based on the run-time of the algorithm.\\
 
 One improvement of the algorithm listed in the course was used, it is the 0.05 acceptance ratio. A low temperature start helps "prevent good initial candidate solutions from being too easily destroyed by worsening steps".
@@ -183,11 +189,17 @@ The second algorithm is the hybrid iterated local search. Here is the pseudo cod
  \caption{Iterated Local Search}
 \end{algorithm}
 
-As initial solution generator, the SLACK heuristic was again used, as it yielded good results in the previous implementation exercise.\\
+As initial solution generator, the SLACK heuristic is again used, as it yielded good results in the previous implementation exercise.\\
 
-As pivoting mode, the first pivoting mode was employed, taking the first improving solution of the neighbourhood.\\
+As pivoting mode, the first pivoting mode is employed, taking the first improving solution of the neighbourhood.\\
 
-The neighbourhood generator used was the insertion generator, taking a job and putting it at another place in the order of jobs.\\
+The neighbourhood generator used is the insertion generator, taking a job and putting it at another place in the order of jobs.\\
+
+The perturbation technique employed is an insertion perturbation of 4 consecutive insertions of a random job at a random place.\\
+
+The acceptance criterion uses the cost of the solutions to take the new best permutation. It forces the solutions algorithm to keep the best solution at all times.\\
+
+As we can see, this algorithm uses perturbation to escape from a local minimum each time one is encountered. This leads to a iteration through the set of local minima. If the run-time is long enough, this could theoretically yield very good results.\\
 
 \section{Results}
 

@@ -5,6 +5,11 @@ import java.util.Random;
 import main.Permutation;
 import neighbourhood_generator.AbstractNeighbourhoodGenerator;
 
+/**
+ * Pivoting manager implementing the simulated annealing method.
+ * @author anthonydebruyn
+ *
+ */
 public class SimulatedAnnealingPM extends AbstractPivotingManager {
 	public final static float INIT_FRACTION_OF_UPHILL_ACCEPTED_TRANSITION = 0.05f;
 	public final static float Q_FACTOR = 2f;
