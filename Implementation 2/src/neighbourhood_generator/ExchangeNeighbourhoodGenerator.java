@@ -34,4 +34,14 @@ public class ExchangeNeighbourhoodGenerator extends AbstractNeighbourhoodGenerat
 		this.j = 1;
 	}
 
+	@Override
+	public int getNeighbourhoodSize(Permutation permutation) {
+		if (this.size >= 0)
+			return this.size;
+		
+		int permutationSize = permutation.size();
+		this.size = permutationSize*(permutationSize-1)/2;
+		return this.size;
+	}
+
 }

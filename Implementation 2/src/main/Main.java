@@ -34,9 +34,11 @@ public class Main {
 		int pivotingMode = FIRST_MODE;
 		int neighbourhoodMode = TRANSPOSE_MODE;
 		int initMode = RANDOM_INIT;
+		int ils = ILS_OFF;
 		File file = null;
 		boolean batch = false;
 		boolean batch_vnd = false;
+		boolean batch_sls = false;
 
 		for (int i = 0; i < args.length && !batch; ++i){
 			switch (args[i]){
@@ -70,6 +72,10 @@ public class Main {
 			case "--slack_init":
 				initMode = SLACK_INIT;
 				break;
+				// The ILS activation:
+			case "--ils":
+				ils = ILS_ON;
+				break;
 				// The file mode:
 			case "--file":
 				file = new File(args[++i]);
@@ -82,6 +88,10 @@ public class Main {
 				file = new File(args[++i]);
 				batch_vnd = true;
 				break;
+			case "--bach_sls":
+				file = new File(args[++i]);
+				batch_sls = true;
+				break;
 			default:
 				System.out.println("Unknown Argument: " + args[i]);
 			}
@@ -91,11 +101,144 @@ public class Main {
 			batch(file);
 		} else if (batch_vnd){
 			batch_vnd(file);
+		} else if (batch_sls){
+			batch_sls(file);
 		} else {
-			new Algorithm(pivotingMode, neighbourhoodMode, initMode).findSolution(file);
+			new Algorithm(pivotingMode, neighbourhoodMode, initMode, ils).findSolution(file);
 		}
 	}
+	
+	private static void batch_sls(File file) {
+		if (!file.isDirectory()){
+			System.out.println("The file '" + file.getName() + "' is not a directory.");
+			return;
+		}
 
+		// A filter to avoid the system hidden files, like '.DS_Store' on MAC OS.
+		FilenameFilter filter = new FilenameFilter(){
+
+			@Override
+			public boolean accept(File dir, String name) {
+				return !name.equals(".DS_Store");
+			}
+
+		};
+		File[] files = file.listFiles(filter);
+
+		// -------------------------------------------------------
+		// We look at the 2 SLS algorithms (only slack init mode).
+		// First the SA:
+		// -------------------------------------------------------
+		
+		int pivotingMode = SA_MODE;
+		int neighbourhoodMode = INSERT_MODE;
+		int initMode = SLACK_INIT;
+
+		Algorithm itImp = new Algorithm(pivotingMode, neighbourhoodMode, initMode, ILS_OFF);
+
+		String name = INIT_MODES[initMode] + NEIGHBOURHOOD_MODES[neighbourhoodMode] + PIVOTING_MODES[pivotingMode] + ILS_MODES[ILS_OFF];
+		String nameAvRelPerDev = "R-avRelPer" + INIT_MODES[initMode] + NEIGHBOURHOOD_MODES[neighbourhoodMode] + PIVOTING_MODES[pivotingMode] + ILS_MODES[ILS_OFF] + ".dat";
+
+		try(BufferedWriter writer = new BufferedWriter(new FileWriter(name)); BufferedWriter writer2 = new BufferedWriter(new FileWriter(nameAvRelPerDev));){
+
+			int averageRelativePercentageDeviation = 0;
+			long sumOfComputationTime = 0;
+
+			for (File instanceFile : files){
+				// Run each algorithm 5 times on each instance:
+				int relPerDev = 0;
+				int cost = 0;
+				
+				Map<String, Object> results = null;
+				for (int i = 0; i < 5; ++i) {
+					results = itImp.findSolution(instanceFile);
+					relPerDev += (int) results.get(RELATIVE_PERCENTAGE_DEVIATION);
+					cost += (int) results.get(COST);
+				}
+				
+				relPerDev /= 5;
+				cost /= 5;
+
+				// Change these 2 lines to change the content of the results files for each algorithm:
+				writer.write(instanceFile.getName() + "\t" + relPerDev + "\t" + (long) results.get(COMPUTATION_TIME) + "\t" + cost + "\t" + (int) results.get(BEST_KNOWN) + "\n");
+				writer2.write(relPerDev + "\n");	// Files used mainly to compute the p-values, contain only the relative percentage deviations.
+
+				averageRelativePercentageDeviation += relPerDev;
+				sumOfComputationTime += (long) results.get(COMPUTATION_TIME);
+			}
+
+			// At the end of each file:
+			averageRelativePercentageDeviation /= files.length;
+			writer.write(averageRelativePercentageDeviation + "\n");	// The average relative percentage deviation for the algorithm.
+			writer.write(Long.toString(sumOfComputationTime) + "\n");	// The sum of the computation times for the algorithm.
+			sumOfComputationTime /= files.length;
+			writer.write(Long.toString(sumOfComputationTime) + "\n");	// The average of the computation times for the algorithm.
+			writer.flush();
+			writer2.flush();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.out.println(e.getMessage());
+		}
+
+		// -------------------------------------------------------
+		// Then the ILS:
+		// -------------------------------------------------------
+
+		pivotingMode = FIRST_MODE;
+		neighbourhoodMode = INSERT_MODE;
+		initMode = SLACK_INIT;
+
+		itImp = new Algorithm(pivotingMode, neighbourhoodMode, initMode, ILS_ON);
+
+		name = INIT_MODES[initMode] + NEIGHBOURHOOD_MODES[neighbourhoodMode] + PIVOTING_MODES[pivotingMode] + ILS_MODES[ILS_OFF];
+		nameAvRelPerDev = "R-avRelPer" + INIT_MODES[initMode] + NEIGHBOURHOOD_MODES[neighbourhoodMode] + PIVOTING_MODES[pivotingMode] + ILS_MODES[ILS_OFF] + ".dat";
+
+		try(BufferedWriter writer = new BufferedWriter(new FileWriter(name)); BufferedWriter writer2 = new BufferedWriter(new FileWriter(nameAvRelPerDev));){
+
+			int averageRelativePercentageDeviation = 0;
+			long sumOfComputationTime = 0;
+
+			for (File instanceFile : files){
+				// Run each algorithm 5 times on each instance:
+				int relPerDev = 0;
+				int cost = 0;
+
+				Map<String, Object> results = null;
+				for (int i = 0; i < 5; ++i) {
+					results = itImp.findSolution(instanceFile);
+					relPerDev += (int) results.get(RELATIVE_PERCENTAGE_DEVIATION);
+					cost += (int) results.get(COST);
+				}
+
+				relPerDev /= 5;
+				cost /= 5;
+
+				// Change these 2 lines to change the content of the results files for each algorithm:
+				writer.write(instanceFile.getName() + "\t" + relPerDev + "\t" + (long) results.get(COMPUTATION_TIME) + "\t" + cost + "\t" + (int) results.get(BEST_KNOWN) + "\n");
+				writer2.write(relPerDev + "\n");	// Files used mainly to compute the p-values, contain only the relative percentage deviations.
+
+				averageRelativePercentageDeviation += relPerDev;
+				sumOfComputationTime += (long) results.get(COMPUTATION_TIME);
+			}
+
+			// At the end of each file:
+			averageRelativePercentageDeviation /= files.length;
+			writer.write(averageRelativePercentageDeviation + "\n");	// The average relative percentage deviation for the algorithm.
+			writer.write(Long.toString(sumOfComputationTime) + "\n");	// The sum of the computation times for the algorithm.
+			sumOfComputationTime /= files.length;
+			writer.write(Long.toString(sumOfComputationTime) + "\n");	// The average of the computation times for the algorithm.
+			writer.flush();
+			writer2.flush();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.out.println(e.getMessage());
+		}
+
+
+	}
+	
 	private static void batch_vnd(File file) {
 
 		if (!file.isDirectory()){
@@ -120,7 +263,7 @@ public class Main {
 		for (int initMode = 0; initMode <= 1; ++initMode){
 			for (int neighbourhoodMode = VND_TRANSPOSE_EXCHANGE_INSERT_MODE; neighbourhoodMode <= VND_TRANSPOSE_INSERT_EXCHANGE_MODE; ++neighbourhoodMode){
 
-				Algorithm itImp = new Algorithm(pivotingMode, neighbourhoodMode, initMode);
+				Algorithm itImp = new Algorithm(pivotingMode, neighbourhoodMode, initMode, ILS_OFF);
 
 				String name = INIT_MODES[initMode] + NEIGHBOURHOOD_MODES[neighbourhoodMode] + PIVOTING_MODES[pivotingMode];
 				String nameAvRelPerDev = "R-avRelPer" + INIT_MODES[initMode] + NEIGHBOURHOOD_MODES[neighbourhoodMode] + PIVOTING_MODES[pivotingMode] + ".dat";
@@ -189,7 +332,7 @@ public class Main {
 			for (int neighbourhoodMode = 0; neighbourhoodMode <= 2; ++neighbourhoodMode){
 				for(int pivotingMode = 0; pivotingMode <= 1; ++pivotingMode){
 
-					Algorithm itImp = new Algorithm(pivotingMode, neighbourhoodMode, initMode);
+					Algorithm itImp = new Algorithm(pivotingMode, neighbourhoodMode, initMode, ILS_OFF);
 
 					String name = INIT_MODES[initMode] + NEIGHBOURHOOD_MODES[neighbourhoodMode] + PIVOTING_MODES[pivotingMode];
 					String nameAvRelPerDev = "R-avRelPer" + INIT_MODES[initMode] + NEIGHBOURHOOD_MODES[neighbourhoodMode] + PIVOTING_MODES[pivotingMode] + ".dat";

@@ -10,6 +10,7 @@ import main.Permutation;
  */
 public abstract class AbstractNeighbourhoodGenerator {
 	private Permutation permutation;
+	protected int size = -1;
 
 	/**
 	 * All generators must override this method, and must call it at the beginning of the overriding version.
@@ -30,4 +31,11 @@ public abstract class AbstractNeighbourhoodGenerator {
 	 * Used to reset the neighbourhood search, in case a new permutation is given to the generator.
 	 */
 	abstract void resetNeighbourhood();
+	
+	/**
+	 * Returns the size of the neighbourhood.
+	 * @param permutation A permutation whose neighbourhood we want the size.
+	 * @return
+	 */
+	public abstract int getNeighbourhoodSize(Permutation permutation);
 }

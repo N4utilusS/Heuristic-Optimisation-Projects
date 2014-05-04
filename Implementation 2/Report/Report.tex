@@ -85,6 +85,7 @@ footnotesep=50mm
   morekeywords={*,...}               % if you want to add more keywords to the set 
 } 
 \usepackage{amssymb}
+\usepackage[]{algorithm2e}
 
 \newcommand*{\course}{\fbox{INFO-H-413}} % Generic publisher logo
 
@@ -124,5 +125,70 @@ footnotesep=50mm
 \titleTH % This command includes the title page
 
 \newpage
-\textsl{Derp}
+\section{Introduction}
+The goal of this project was to implement 2 SLS algorithms, and analyse and compare them by means of statistical tests, run-time distributions and correlation plots. 
+
+\section{Studied SLS Algorithms}
+\subsection{Simulated Annealing}
+The first algorithm tested is the simulated annealing. Its pseudo code is the following:
+
+\begin{algorithm}[H]
+ Get initial solution $s$ with SLACK heuristic\;
+ Set initial temperature $T$ to get 0.05 acceptance ratio\;
+ $counter = 0$\;
+ \While{Allowed run-time not elapsed}{
+  Choose randomly a neighbour $s'$ of $s$ in the insertion neighbourhood\;
+  \If{$s'$ satisfies the Metropolis condition}{
+   $s := s'$\;
+   }
+   $counter = counter + 1$\;
+   \If{$counter >= q * |N(s)|$}{
+	$T = T*r$\;
+	$counter = 0$\;
+   }
+ }
+ \caption{Simulated Annealing}
+\end{algorithm}
+
+The values used for the parameters are listed here:
+\begin{description}
+\item[Initial acceptance ratio of $0.05$:] This value of the initial acceptance ratio was chosen from \emph{Kim YD, Lim HG, Park MW. Search heuristics for a flowshop scheduling problem in a printed circuit board assembly process. European Journal
+of Operational Research 1996;91:124–43.}, an article referenced in \emph{Eva Vallada,Rubén Ruiz, Gerardo Minella. Minimising total tardiness in the m-machine flow-shop problem: A review and evaluation of heuristics and metaheuristics. Computers \& OR, 35(4):1350–1373, 2008.} put in the guidelines. The value was the best tested one.
+
+\item[$q$:] This factor is found in the epoch length, and its value is 2. The epoch length is the number of steps made with the same temperature. It is proportional to the size of the neighbourhood, so the annealing schedule adapts to the size of the problem. Again, $q = 2$ was the best value tested in the above mentioned paper.
+
+\item[$r$:] It is the factor used in the geometric cooling, and its value is 0.7, as in the article best algorithm.
+\end{description}
+
+The first solution of the algorithm is obtained with the SLACK heuristic, and the neighbourhood used is the insertion neighbourhood. These offered very good results in the first implementation exercise.\\
+
+The termination condition is based on the run-time of the algorithm.\\
+
+One improvement of the algorithm listed in the course was used, it is the 0.05 acceptance ratio. A low temperature start helps "prevent good initial candidate solutions from being too easily destroyed by worsening steps".
+
+\subsection{Iterated Local Search}
+
+The second algorithm is the hybrid iterated local search. Here is the pseudo code:
+
+\begin{algorithm}[H]
+ $s \leftarrow$ Get initial solution $s$ with SLACK heuristic\;
+ $s \leftarrow$ Perform local search with $s$\;
+ \While{Allowed run-time not elapsed}{
+ 	$s' \leftarrow$ Perturbation on $s$\;
+ 	$s' \leftarrow$ Perform local search with $s'$\;
+ 	\If{$cost(s') <= cost(s)$}{
+ 		$s := s'$\;
+ 	}
+ }
+ \caption{Iterated Local Search}
+\end{algorithm}
+
+As initial solution generator, the SLACK heuristic was again used, as it yielded good results in the previous implementation exercise.\\
+
+As pivoting mode, the first pivoting mode was employed, taking the first improving solution of the neighbourhood.\\
+
+The neighbourhood generator used was the insertion generator, taking a job and putting it at another place in the order of jobs.\\
+
+\section{Results}
+
 \end{document}

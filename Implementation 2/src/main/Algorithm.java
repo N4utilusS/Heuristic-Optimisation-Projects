@@ -15,9 +15,12 @@ import neighbourhood_generator.InsertNeighbourhoodGenerator;
 import neighbourhood_generator.TransposeNeighbourhoodGenerator;
 import neighbourhood_generator.VNDTransposeExchangeInsert;
 import neighbourhood_generator.VNDTransposeInsertExchange;
+import perturbation_generator.AbstractPerturbationGenerator;
+import perturbation_generator.MultipleInsertPerturbator;
 import pivoting_manager.AbstractPivotingManager;
 import pivoting_manager.BestPivotingManager;
 import pivoting_manager.FirstPivotingManager;
+import pivoting_manager.SimulatedAnnealingPM;
 
 /**
  * Main class of the algorithm.
@@ -36,10 +39,14 @@ public class Algorithm {
 
 	public final static int FIRST_MODE = 0;
 	public final static int BEST_MODE = 1;
+	public final static int SA_MODE = 2;
 
 	public final static int RANDOM_INIT = 0;
 	public final static int SLACK_INIT = 1;
-	
+
+	public final static int ILS_OFF = 0;
+	public final static int ILS_ON = 1;
+
 	public final static String RELATIVE_PERCENTAGE_DEVIATION = "Relative Percentage Deviation";
 	public final static String COMPUTATION_TIME = "Computation Time";
 	public final static String BEST_KNOWN = "Best Known";
@@ -63,12 +70,21 @@ public class Algorithm {
 		"--best",
 		"--sa"
 	};
+	
+	public final static String[] ILS_MODES = {
+		"--ils_off",
+		"--ils_on"
+	};
 
 
 	private int pivotingMode;
 	private int neighbourhoodMode;
 	private int initMode;
+	private int ils;
 	private Instance instance;
+	private InitialSolutionGenerator initialSolutionGenerator;
+	private AbstractNeighbourhoodGenerator neighbourhoodGenerator;
+	private AbstractPivotingManager pivotingManager;
 
 
 	/**
@@ -77,11 +93,12 @@ public class Algorithm {
 	 * @param neighbourhoodMode The id of the neighbourhood mode, see the constants.
 	 * @param initMode The id of the first solution generation mode, see the constants.
 	 */
-	Algorithm(int pivotingMode, int neighbourhoodMode, int initMode){
+	Algorithm(int pivotingMode, int neighbourhoodMode, int initMode, int ils){
 		super();
 		this.pivotingMode = pivotingMode;
 		this.neighbourhoodMode = neighbourhoodMode;
 		this.initMode = initMode;
+		this.ils = ils;
 	}
 
 	/**
@@ -108,29 +125,51 @@ public class Algorithm {
 		long runTime = getRunTime();
 
 		// Get the initial solution/permutation
-		InitialSolutionGenerator initialSolutionGenerator = getInitialSolutionGenerator();
+		initialSolutionGenerator = getInitialSolutionGenerator();
 
 		Permutation permutation = initialSolutionGenerator.getInitialSolution(this.instance);
 		//Permutation permutation = new Permutation(this.instance);
 		//System.out.println(permutation);
 
 		// Get the neighbourhood generator
-		AbstractNeighbourhoodGenerator neighbourhoodGenerator = getNeighbourhoodGenerator();
+		neighbourhoodGenerator = getNeighbourhoodGenerator();
 
 		// Get the pivoting manager
-		AbstractPivotingManager pivotingManager = getPivotingManager(neighbourhoodGenerator);
+		pivotingManager = getPivotingManager(neighbourhoodGenerator);
 		pivotingManager.init(permutation);
 
-		// Iterate while not local optimum
-		Permutation newPermutation = permutation;
+		// Iterate while time not elapsed.
+		Permutation newPermutation = null;
 
 		int stepCounter = 0;
-		
-		do {
-			permutation = newPermutation;
-			newPermutation = pivotingManager.getNewPermutation(permutation);
-			stepCounter++;
-		} while (System.currentTimeMillis() - timerStart < runTime);
+		Permutation bestPermutation = permutation;
+
+		switch (this.ils) {
+		case ILS_ON:
+			AbstractPerturbationGenerator perturbationGenerator = new MultipleInsertPerturbator();
+			bestPermutation = localSearch(permutation);
+			
+			do {
+				newPermutation = perturbationGenerator.perturb(bestPermutation);
+				newPermutation = localSearch(newPermutation);
+				
+				// Acceptance criterion:
+				if (newPermutation.getTotalWeightedTardiness() <= bestPermutation.getTotalWeightedTardiness())
+					bestPermutation = newPermutation;
+				
+			} while (System.currentTimeMillis() - timerStart < runTime);
+			break;
+		default:
+			do {
+				newPermutation = pivotingManager.getNewPermutation(permutation);
+				if (newPermutation.getTotalWeightedTardiness() < bestPermutation.getTotalWeightedTardiness())
+					bestPermutation = newPermutation;
+				stepCounter++;
+				permutation = newPermutation;
+			} while (System.currentTimeMillis() - timerStart < runTime);
+
+
+		}
 
 		int bestKnown = getBestKnown();
 
@@ -148,6 +187,20 @@ public class Algorithm {
 		return results;
 	}
 	
+	/**
+	 * Performs a local search on the given permutation, using the first pivoting mode and the insert neighbourhood mode.
+	 * @param permutation The given permutation.
+	 * @return The local minimum.
+	 */
+	private Permutation localSearch(Permutation permutation) {
+		Permutation newPermutation = permutation;
+
+		do {
+			permutation = newPermutation;
+			newPermutation = pivotingManager.getNewPermutation(permutation);
+		} while (newPermutation != permutation);
+		return newPermutation;
+	}
 
 	private long getRunTime() {
 		// TODO Auto-generated method stub
@@ -169,6 +222,9 @@ public class Algorithm {
 			break;
 		case BEST_MODE:
 			pivotingManager = new BestPivotingManager(neighbourhoodGenerator);
+			break;
+		case SA_MODE:
+			pivotingManager = new SimulatedAnnealingPM(neighbourhoodGenerator);
 			break;
 		default:
 			pivotingManager = new FirstPivotingManager(neighbourhoodGenerator);

@@ -24,4 +24,14 @@ public class TransposeNeighbourhoodGenerator extends AbstractNeighbourhoodGenera
 		this.i = 0;
 	}
 
+	@Override
+	public int getNeighbourhoodSize(Permutation permutation) {
+		if (this.size >= 0)
+			return this.size;
+		
+		int permutationSize = permutation.size();
+		this.size = permutationSize-1;
+		return this.size;
+	}
+
 }
