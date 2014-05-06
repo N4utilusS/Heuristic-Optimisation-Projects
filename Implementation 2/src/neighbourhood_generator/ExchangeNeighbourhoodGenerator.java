@@ -29,7 +29,7 @@ public class ExchangeNeighbourhoodGenerator extends AbstractNeighbourhoodGenerat
 	}
 
 	@Override
-	void resetNeighbourhood() {
+	public void resetNeighbourhood() {
 		this.i = 0;
 		this.j = 1;
 	}

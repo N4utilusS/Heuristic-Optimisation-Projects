@@ -65,7 +65,7 @@ public class SimulatedAnnealingPM extends AbstractPivotingManager {
 		float meanTardinessIncrease = 0;
 		int counter = 0;
 		
-		while ((newPermutation = neighbourhoodGenerator.getNextNeighbour(newPermutation)) != null) {
+		while ((newPermutation = neighbourhoodGenerator.getNextNeighbour(permutation)) != null) {
 			if (newPermutation.getTotalWeightedTardiness() > twt) {
 				meanTardinessIncrease += newPermutation.getTotalWeightedTardiness() - twt;
 				counter++;
@@ -76,7 +76,9 @@ public class SimulatedAnnealingPM extends AbstractPivotingManager {
 		
 		// Save the initial temperature:
 		this.temperature = (float) (-meanTardinessIncrease/Math.log(INIT_FRACTION_OF_UPHILL_ACCEPTED_TRANSITION));
-				
+		
+		// Reset the neighbourhood:
+		this.neighbourhoodGenerator.resetNeighbourhood();
 	}
 
 }

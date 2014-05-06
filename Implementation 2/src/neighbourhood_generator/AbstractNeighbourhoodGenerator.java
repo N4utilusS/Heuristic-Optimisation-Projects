@@ -30,7 +30,7 @@ public abstract class AbstractNeighbourhoodGenerator {
 	/**
 	 * Used to reset the neighbourhood search, in case a new permutation is given to the generator.
 	 */
-	abstract void resetNeighbourhood();
+	public abstract void resetNeighbourhood();
 	
 	/**
 	 * Returns the size of the neighbourhood.

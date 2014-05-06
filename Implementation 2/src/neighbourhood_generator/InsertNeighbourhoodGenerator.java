@@ -35,14 +35,14 @@ public class InsertNeighbourhoodGenerator extends AbstractNeighbourhoodGenerator
 	}
 	
 	@Override
-	void resetNeighbourhood() {
+	public void resetNeighbourhood() {
 		this.i = 0;
 		this.j = 1;
 	}
 
 	@Override
 	public int getNeighbourhoodSize(Permutation permutation) {
-		if (this.size >= 0)
+		if (this.size > 0)
 			return this.size;
 		
 		int temp = permutation.size()-1;

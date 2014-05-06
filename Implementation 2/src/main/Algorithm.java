@@ -123,6 +123,7 @@ public class Algorithm {
 
 		// Get the runtime.
 		long runTime = getRunTime();
+		System.out.println("Computing " + this.instance.getJobsAmount() + "x" + this.instance.getMachineAmount() + " " + this.instance.getInstanceNumber() + " - max run-time: " + runTime);
 
 		// Get the initial solution/permutation
 		initialSolutionGenerator = getInitialSolutionGenerator();
@@ -174,15 +175,15 @@ public class Algorithm {
 		int bestKnown = getBestKnown();
 
 		// Print some results on the console.
-		System.out.println(file.getName() + "\t" + this.initMode + "-" + this.neighbourhoodMode + "-" + this.pivotingMode + "\t" + newPermutation.getTotalWeightedTardiness() + "\t" + bestKnown + "\tin " + runTime + " ms\tin " + stepCounter + " steps");
+		System.out.println(file.getName() + "\t" + this.initMode + "-" + this.neighbourhoodMode + "-" + this.pivotingMode + "\t" + bestPermutation.getTotalWeightedTardiness() + "\t" + bestKnown + "\tin " + runTime + " ms\tin " + stepCounter + " steps");
 		
 		// Send the results back.
 		Map<String, Object> results = new HashMap<String, Object>();
-		int relPerDev = (int) (100.0f * (float)(newPermutation.getTotalWeightedTardiness() - bestKnown) / (float)(bestKnown));
+		int relPerDev = (int) (100.0f * (float)(bestPermutation.getTotalWeightedTardiness() - bestKnown) / (float)(bestKnown));
 		results.put(RELATIVE_PERCENTAGE_DEVIATION, relPerDev);
 		results.put(COMPUTATION_TIME, runTime);
 		results.put(BEST_KNOWN, bestKnown);
-		results.put(COST, newPermutation.getTotalWeightedTardiness());
+		results.put(COST, bestPermutation.getTotalWeightedTardiness());
 		
 		return results;
 	}
@@ -203,8 +204,25 @@ public class Algorithm {
 	}
 
 	private long getRunTime() {
-		// TODO Auto-generated method stub
-		return 0;
+		String prefix = instance.getJobsAmount() + "x" + instance.getMachineAmount() + " ";
+		long runTime = 0;
+		
+		File best = new File("run-times.txt");
+		try(Scanner scanner = new Scanner(best)){
+			boolean stop = false;
+
+			while (!stop && scanner.hasNextLine()){
+				String line = scanner.nextLine();
+
+				if (line.startsWith(prefix)){
+					runTime = Long.parseLong(line.substring(prefix.length()));
+					stop = true;
+				}
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		return runTime;
 	}
 
 	/**

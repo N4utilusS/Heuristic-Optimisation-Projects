@@ -31,7 +31,7 @@ public class VNDTransposeInsertExchange extends AbstractNeighbourhoodGenerator {
 	}
 	
 	@Override
-	void resetNeighbourhood() {
+	public void resetNeighbourhood() {
 		// Nothing to do here. The 3 sub generators will reset when they will see another incoming permutation.
 	}
 

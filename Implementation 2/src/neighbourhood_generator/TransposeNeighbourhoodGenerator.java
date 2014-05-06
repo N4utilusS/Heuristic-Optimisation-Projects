@@ -20,7 +20,7 @@ public class TransposeNeighbourhoodGenerator extends AbstractNeighbourhoodGenera
 	}
 
 	@Override
-	void resetNeighbourhood() {
+	public void resetNeighbourhood() {
 		this.i = 0;
 	}
 
