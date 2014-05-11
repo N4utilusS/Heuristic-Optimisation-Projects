@@ -76,6 +76,7 @@ public class Algorithm {
 		"--ils_on"
 	};
 
+	public final static int MAX_RELATIVE_PERCENTAGE_DEVIATION = 1;
 
 	private int pivotingMode;
 	private int neighbourhoodMode;
@@ -102,7 +103,7 @@ public class Algorithm {
 	}
 
 	/**
-	 * Get a solution from the algorithm.
+	 * Get a solution from the algorithm within a certain allowed time.
 	 * The returned solution is a local maximum.
 	 * The mode of the algorithm must be defined with the constructor.
 	 * @param file The file of the instance of the problem.
@@ -144,6 +145,7 @@ public class Algorithm {
 
 		int stepCounter = 0;
 		Permutation bestPermutation = permutation;
+		long currTimer;
 
 		switch (this.ils) {
 		case ILS_ON:
@@ -157,8 +159,9 @@ public class Algorithm {
 				// Acceptance criterion:
 				if (newPermutation.getTotalWeightedTardiness() <= bestPermutation.getTotalWeightedTardiness())
 					bestPermutation = newPermutation;
-				
-			} while (System.currentTimeMillis() - timerStart < runTime);
+				stepCounter++;
+				currTimer = System.currentTimeMillis();
+			} while (currTimer - timerStart < runTime);
 			break;
 		default:
 			do {
@@ -167,7 +170,8 @@ public class Algorithm {
 					bestPermutation = newPermutation;
 				stepCounter++;
 				permutation = newPermutation;
-			} while (System.currentTimeMillis() - timerStart < runTime);
+				currTimer = System.currentTimeMillis();
+			} while (currTimer - timerStart < runTime);
 
 
 		}
@@ -175,13 +179,104 @@ public class Algorithm {
 		int bestKnown = getBestKnown();
 
 		// Print some results on the console.
-		System.out.println(file.getName() + "\t" + this.initMode + "-" + this.neighbourhoodMode + "-" + this.pivotingMode + "\t" + bestPermutation.getTotalWeightedTardiness() + "\t" + bestKnown + "\tin " + runTime + " ms\tin " + stepCounter + " steps");
+		System.out.println(file.getName() + "\t" + this.initMode + "-" + this.neighbourhoodMode + "-" + this.pivotingMode + "\t" + bestPermutation.getTotalWeightedTardiness() + "\t" + bestKnown + "\tin " + currTimer + " ms\tin " + stepCounter + " steps");
 		
 		// Send the results back.
 		Map<String, Object> results = new HashMap<String, Object>();
 		int relPerDev = (int) (100.0f * (float)(bestPermutation.getTotalWeightedTardiness() - bestKnown) / (float)(bestKnown));
 		results.put(RELATIVE_PERCENTAGE_DEVIATION, relPerDev);
-		results.put(COMPUTATION_TIME, runTime);
+		results.put(COMPUTATION_TIME, currTimer);
+		results.put(BEST_KNOWN, bestKnown);
+		results.put(COST, bestPermutation.getTotalWeightedTardiness());
+		
+		return results;
+	}
+	
+	/**
+	 * Get a solution from the algorithm with a minimal required quality.
+	 * The returned solution is a local maximum.
+	 * The mode of the algorithm must be defined with the constructor.
+	 * @param file The file of the instance of the problem.
+	 * @return A Map<String, Object> containing the properties of the computation and solution (see the constants).
+	 * RELATIVE_PERCENTAGE_DEVIATION, 
+	 * COMPUTATION_TIME, 
+	 * BEST_KNOWN, 
+	 * COST
+	 */
+	public Map<String, Object> findSolutionWithMinimalQuality(File file){
+
+		// Start the timer
+		long timerStart = System.currentTimeMillis();
+
+		// Find the size of the problem (#jobs and #machines), and other information
+		getInformation(file);
+		//System.out.println(this.instance);
+
+		// Get the runtime.
+		long runTime = getRunTime() * 10;
+		System.out.println("Computing " + this.instance.getJobsAmount() + "x" + this.instance.getMachineAmount() + " " + this.instance.getInstanceNumber() + " - max run-time: " + runTime);
+
+		// Get the initial solution/permutation
+		initialSolutionGenerator = getInitialSolutionGenerator();
+
+		Permutation permutation = initialSolutionGenerator.getInitialSolution(this.instance);
+		//Permutation permutation = new Permutation(this.instance);
+		//System.out.println(permutation);
+
+		// Get the neighbourhood generator
+		neighbourhoodGenerator = getNeighbourhoodGenerator();
+
+		// Get the pivoting manager
+		pivotingManager = getPivotingManager(neighbourhoodGenerator);
+		pivotingManager.init(permutation);
+
+		// Iterate while time not elapsed.
+		Permutation newPermutation = null;
+
+		int stepCounter = 0;
+		Permutation bestPermutation = permutation;
+		int bestKnown = getBestKnown();
+		int relPerDev;
+		long currTimer;
+
+		switch (this.ils) {
+		case ILS_ON:
+			AbstractPerturbationGenerator perturbationGenerator = new MultipleInsertPerturbator();
+			bestPermutation = localSearch(permutation);
+			
+			do {
+				newPermutation = perturbationGenerator.perturb(bestPermutation);
+				newPermutation = localSearch(newPermutation);
+				
+				// Acceptance criterion:
+				if (newPermutation.getTotalWeightedTardiness() <= bestPermutation.getTotalWeightedTardiness())
+					bestPermutation = newPermutation;
+				stepCounter++;
+				relPerDev = (int) (100.0f * (float)(bestPermutation.getTotalWeightedTardiness() - bestKnown) / (float)(bestKnown));
+				currTimer = System.currentTimeMillis() - timerStart;
+			} while (relPerDev > MAX_RELATIVE_PERCENTAGE_DEVIATION && currTimer < runTime);
+			break;
+		default:
+			do {
+				newPermutation = pivotingManager.getNewPermutation(permutation);
+				if (newPermutation.getTotalWeightedTardiness() < bestPermutation.getTotalWeightedTardiness())
+					bestPermutation = newPermutation;
+				stepCounter++;
+				permutation = newPermutation;
+				relPerDev = (int) (100.0f * (float)(bestPermutation.getTotalWeightedTardiness() - bestKnown) / (float)(bestKnown));
+				currTimer = System.currentTimeMillis() - timerStart;
+			} while (relPerDev > MAX_RELATIVE_PERCENTAGE_DEVIATION && currTimer < runTime);
+
+
+		}
+
+		// Print some results on the console.
+		System.out.println(file.getName() + "\t" + this.initMode + "-" + this.neighbourhoodMode + "-" + this.pivotingMode + "\t" + bestPermutation.getTotalWeightedTardiness() + "\t" + bestKnown + "\tin " + currTimer + " ms\tin " + stepCounter + " steps");
+		
+		// Send the results back.
+		Map<String, Object> results = new HashMap<String, Object>();
+		results.put(RELATIVE_PERCENTAGE_DEVIATION, relPerDev);
+		results.put(COMPUTATION_TIME, currTimer);
 		results.put(BEST_KNOWN, bestKnown);
 		results.put(COST, bestPermutation.getTotalWeightedTardiness());
 		
@@ -208,7 +303,8 @@ public class Algorithm {
 		long runTime = 0;
 		
 		File best = new File("run-times.txt");
-		try(Scanner scanner = new Scanner(best)){
+		try{
+			Scanner scanner = new Scanner(best);
 			boolean stop = false;
 
 			while (!stop && scanner.hasNextLine()){
@@ -219,6 +315,8 @@ public class Algorithm {
 					stop = true;
 				}
 			}
+			
+			scanner.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -313,7 +411,9 @@ public class Algorithm {
 		int jobsAmount;
 		int machineAmount;
 
-		try(Scanner scanner = new Scanner(file)) {
+		try {
+			Scanner scanner = new Scanner(file);
+			
 			// Get the jobs amount:
 			if (!scanner.hasNextInt())
 				throw new Exception("Jobs amount is missing in the file: " + file.getPath());
@@ -377,6 +477,8 @@ public class Algorithm {
 			String number = file.getName().substring(file.getName().lastIndexOf("_")+1);
 
 			this.instance = new Instance(processingTimes, dueDates, priorities, Integer.parseInt(number));
+			
+			scanner.close();
 
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -397,7 +499,8 @@ public class Algorithm {
 		int bestKnown = 0;
 		
 		File best = new File("best_known.txt");
-		try(Scanner scanner = new Scanner(best)){
+		try{
+			Scanner scanner = new Scanner(best);
 			boolean stop = false;
 
 			while (!stop && scanner.hasNextLine()){
@@ -408,6 +511,8 @@ public class Algorithm {
 					stop = true;
 				}
 			}
+			
+			scanner.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}

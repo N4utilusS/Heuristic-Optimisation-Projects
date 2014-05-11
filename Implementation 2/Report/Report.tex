@@ -86,6 +86,7 @@ footnotesep=50mm
 } 
 \usepackage{amssymb}
 \usepackage[boxed]{algorithm2e}
+\usepackage{array}
 
 \newcommand*{\course}{\fbox{INFO-H-413}} % Generic publisher logo
 
@@ -152,7 +153,7 @@ The first algorithm tested is the simulated annealing. Its pseudo code is the fo
 
 The values used for the parameters are listed here:
 \begin{description}
-\item[Initial acceptance ratio of $0.05$:] This value of the initial acceptance ratio was chosen from \emph{Kim YD, Lim HG, Park MW. Search heuristics for a flowshop scheduling problem in a printed circuit board assembly process. European Journal
+\item[Initial acceptance ratio $F_0$ of $0.05$:] This value of the initial acceptance ratio was chosen from \emph{Kim YD, Lim HG, Park MW. Search heuristics for a flowshop scheduling problem in a printed circuit board assembly process. European Journal
 of Operational Research 1996;91:124–43.}, an article referenced in \emph{Eva Vallada,Rubén Ruiz, Gerardo Minella. Minimising total tardiness in the m-machine flow-shop problem: A review and evaluation of heuristics and metaheuristics. Computers \& OR, 35(4):1350–1373, 2008.} put in the guidelines. The value was the best tested one.
 
 \item[$q$:] This factor is found in the epoch length, and its value is 2. The epoch length is the number of steps made with the same temperature. It is proportional to the size of the neighbourhood, so the annealing schedule adapts to the size of the problem. Again, $q = 2$ was the best value tested in the above mentioned paper.
@@ -202,5 +203,146 @@ The acceptance criterion uses the cost of the solutions to take the new best per
 As we can see, this algorithm uses perturbation to escape from a local minimum each time one is encountered. This leads to a iteration through the set of local minima. If the run-time is long enough, this could theoretically yield very good results.\\
 
 \section{Results}
+
+\subsection{Mean Relative Percentage Deviations}
+
+\begin{center}
+\begin{figure}[H]
+\begin{tabular}{| >{\centering\arraybackslash}m{2cm} | >{\centering\arraybackslash}m{2cm} | >{\centering\arraybackslash}m{2cm} |}
+\hline
+Instances & SA & ILS \\ \hline
+100x20\_1	&	114	&	-3	\\ \hline
+100x20\_10	&	122	&	-1	\\ \hline
+100x20\_2	&	174	&	-1	\\ \hline
+100x20\_3	&	106	&	-2	\\ \hline
+100x20\_4	&	124	&	-1	\\ \hline
+100x20\_5	&	135	&	-1	\\ \hline
+100x20\_6	&	111	&	-2	\\ \hline
+100x20\_7	&	111	&	-3	\\ \hline
+100x20\_8	&	113	&	-1	\\ \hline
+100x20\_9	&	101	&	-3	\\ \hline
+
+\end{tabular}
+
+\caption{100 jobs}
+\end{figure}
+
+\begin{figure}[H]
+\begin{tabular}{| >{\centering\arraybackslash}m{2cm} | >{\centering\arraybackslash}m{2cm} | >{\centering\arraybackslash}m{2cm} |}
+\hline
+Instances & SA & ILS \\ \hline
+50x20\_1	&	349	&	1	\\ \hline
+50x20\_10	&	389	&	0	\\ \hline
+50x20\_2	&	1052	&	-5	\\ \hline
+50x20\_3	&	825	&	3	\\ \hline
+50x20\_4	&	2081	&	9	\\ \hline
+50x20\_5	&	760	&	2	\\ \hline
+50x20\_6	&	527	&	0	\\ \hline
+50x20\_7	&	718	&	0	\\ \hline
+50x20\_8	&	232	&	0	\\ \hline
+50x20\_9	&	557	&	0	\\ \hline
+
+\end{tabular}
+
+\caption{50 jobs}
+\end{figure}
+
+\begin{figure}[H]
+\begin{tabular}{| >{\centering\arraybackslash}m{2cm} | >{\centering\arraybackslash}m{2cm} | >{\centering\arraybackslash}m{2cm} |}
+\hline
+Instances & SA & ILS \\ \hline
+60x20\_1	&	250	&	0	\\ \hline
+60x20\_10	&	275	&	0	\\ \hline
+60x20\_2	&	182	&	-1	\\ \hline
+60x20\_3	&	158	&	0	\\ \hline
+60x20\_4	&	351	&	0	\\ \hline
+60x20\_5	&	237	&	0	\\ \hline
+60x20\_6	&	269	&	0	\\ \hline
+60x20\_7	&	416	&	0	\\ \hline
+60x20\_8	&	270	&	0	\\ \hline
+60x20\_9	&	297	&	0	\\ \hline
+
+\end{tabular}
+
+\caption{60 jobs}
+\end{figure}
+
+\begin{figure}[H]
+\begin{tabular}{| >{\centering\arraybackslash}m{2cm} | >{\centering\arraybackslash}m{2cm} | >{\centering\arraybackslash}m{2cm} |}
+\hline
+Instances & SA & ILS \\ \hline
+70x20\_1	&	188	&	0	\\ \hline
+70x20\_10	&	203	&	-1	\\ \hline
+70x20\_2	&	154	&	0	\\ \hline
+70x20\_3	&	242	&	0	\\ \hline
+70x20\_4	&	260	&	0	\\ \hline
+70x20\_5	&	214	&	0	\\ \hline
+70x20\_6	&	240	&	0	\\ \hline
+70x20\_7	&	213	&	0	\\ \hline
+70x20\_8	&	245	&	-1	\\ \hline
+70x20\_9	&	217	&	-1	\\ \hline
+
+\end{tabular}
+
+\caption{70 jobs}
+\end{figure}
+
+\begin{figure}[H]
+\begin{tabular}{| >{\centering\arraybackslash}m{2cm} | >{\centering\arraybackslash}m{2cm} | >{\centering\arraybackslash}m{2cm} |}
+\hline
+Instances & SA & ILS \\ \hline
+80x20\_1	&	192	&	0	\\ \hline
+80x20\_10	&	167	&	-1	\\ \hline
+80x20\_2	&	167	&	0	\\ \hline
+80x20\_3	&	159	&	-2	\\ \hline
+80x20\_4	&	180	&	0	\\ \hline
+80x20\_5	&	134	&	0	\\ \hline
+80x20\_6	&	168	&	-1	\\ \hline
+80x20\_7	&	226	&	-2	\\ \hline
+80x20\_8	&	130	&	0	\\ \hline
+80x20\_9	&	224	&	-1	\\ \hline
+
+\end{tabular}
+
+\caption{80 jobs}
+\end{figure}
+
+\begin{figure}[H]
+\begin{tabular}{| >{\centering\arraybackslash}m{2cm} | >{\centering\arraybackslash}m{2cm} | >{\centering\arraybackslash}m{2cm} |}
+\hline
+Instances & SA & ILS \\ \hline
+90x20\_1	&	159	&	-1	\\ \hline
+90x20\_10	&	119	&	-2	\\ \hline
+90x20\_2	&	116	&	-1	\\ \hline
+90x20\_3	&	132	&	-1	\\ \hline
+90x20\_4	&	128	&	-2	\\ \hline
+90x20\_5	&	172	&	0	\\ \hline
+90x20\_6	&	124	&	0	\\ \hline
+90x20\_7	&	151	&	-3	\\ \hline
+90x20\_8	&	145	&	-2	\\ \hline
+90x20\_9	&	119	&	-1	\\ \hline
+
+\end{tabular}
+
+\caption{90 jobs}
+\end{figure}
+
+\end{center}
+
+As we can see on the figures above, the 2 algorithms offer very different results. The SA is the worst tested, if we also look back at the first implementation exercise. The ILS, on the other hand, is the best and yields solutions that are better than the best known. On average, the SA has a relative percentage deviation of 278, while the ILS one is 0.
+
+\subsection{Correlation Plots of the Mean Relative Percentage Deviation}
+
+\begin{figure}[H]
+\centering \includegraphics[width=\textwidth]{correlation.png}
+\caption{Correlation between SA and ILS on the MRPD of each instance}
+\end{figure}
+
+Except the outlier on the upper left zone (above 1000), the graph shows a certain correlation between the 2 algorithms. The higher the MRPD on the ILS side the higher on the SA side. Moreover, the values are a lot more spread on the SA side. For the ILS, the values rarely go above 0.
+
+
+\subsection{Statistical Test}
+
+With the help of the Wilcoxon test, the p-value $1.670281*10^{-11}$ was obtained, confirming what the previous graph and tables were showing. The probability to incorrectly rejecting the hypothesis of similarity between the 2 algorithms is 1.670281e-11. So the 2 algorithms are, with a high probability very different.
 
 \end{document}

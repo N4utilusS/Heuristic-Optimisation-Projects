@@ -40,7 +40,7 @@ public class Main {
 		boolean batch_vnd = false;
 		boolean batch_sls = false;
 
-		for (int i = 0; i < args.length && !batch; ++i){
+		/*for (int i = 0; i < args.length && !batch; ++i){
 			switch (args[i]){
 			// The pivoting mode:
 			case "--first":
@@ -88,14 +88,17 @@ public class Main {
 				file = new File(args[++i]);
 				batch_vnd = true;
 				break;
-			case "--bach_sls":
+			case "--batch_sls":
 				file = new File(args[++i]);
 				batch_sls = true;
 				break;
 			default:
 				System.out.println("Unknown Argument: " + args[i]);
 			}
-		}
+		}*/
+		
+		batch_sls = true;
+		file = new File("Instances");
 
 		if (batch){
 			batch(file);
@@ -109,6 +112,8 @@ public class Main {
 	}
 	
 	private static void batch_sls(File file) {
+		System.out.println("BATCH BEGINS");
+		
 		if (!file.isDirectory()){
 			System.out.println("The file '" + file.getName() + "' is not a directory.");
 			return;
@@ -124,6 +129,11 @@ public class Main {
 
 		};
 		File[] files = file.listFiles(filter);
+		System.out.println("On files:");
+		for (File f: files) {
+			System.out.println(f.getName());
+		}
+		System.out.println("Computations:");
 
 		// -------------------------------------------------------
 		// We look at the 2 SLS algorithms (only slack init mode).
@@ -139,8 +149,12 @@ public class Main {
 		String name = INIT_MODES[initMode] + NEIGHBOURHOOD_MODES[neighbourhoodMode] + PIVOTING_MODES[pivotingMode] + ILS_MODES[ILS_OFF];
 		String nameAvRelPerDev = "R-avRelPer" + INIT_MODES[initMode] + NEIGHBOURHOOD_MODES[neighbourhoodMode] + PIVOTING_MODES[pivotingMode] + ILS_MODES[ILS_OFF] + ".dat";
 
-		try(BufferedWriter writer = new BufferedWriter(new FileWriter(name)); BufferedWriter writer2 = new BufferedWriter(new FileWriter(nameAvRelPerDev));){
-
+		
+		try{
+			
+			BufferedWriter writer = new BufferedWriter(new FileWriter(name));
+			BufferedWriter writer2 = new BufferedWriter(new FileWriter(nameAvRelPerDev));
+			
 			int averageRelativePercentageDeviation = 0;
 			long sumOfComputationTime = 0;
 
@@ -148,23 +162,28 @@ public class Main {
 				// Run each algorithm 5 times on each instance:
 				int relPerDev = 0;
 				int cost = 0;
+				long runTime = 0;
 				
 				Map<String, Object> results = null;
 				for (int i = 0; i < 5; ++i) {
 					results = itImp.findSolution(instanceFile);
-					relPerDev += (int) results.get(RELATIVE_PERCENTAGE_DEVIATION);
-					cost += (int) results.get(COST);
+					relPerDev += (Integer) results.get(RELATIVE_PERCENTAGE_DEVIATION);
+					cost += (Integer) results.get(COST);
+					runTime += (Long) results.get(COMPUTATION_TIME);
 				}
 				
 				relPerDev /= 5;
 				cost /= 5;
+				runTime /= 5;
 
 				// Change these 2 lines to change the content of the results files for each algorithm:
-				writer.write(instanceFile.getName() + "\t" + relPerDev + "\t" + (long) results.get(COMPUTATION_TIME) + "\t" + cost + "\t" + (int) results.get(BEST_KNOWN) + "\n");
+				writer.write(instanceFile.getName() + "\t" + relPerDev + "\t" + runTime + "\t" + cost + "\t" + (Integer) results.get(BEST_KNOWN) + "\n");
+				writer.flush();
 				writer2.write(relPerDev + "\n");	// Files used mainly to compute the p-values, contain only the relative percentage deviations.
+				writer2.flush();
 
 				averageRelativePercentageDeviation += relPerDev;
-				sumOfComputationTime += (long) results.get(COMPUTATION_TIME);
+				sumOfComputationTime += (Long) results.get(COMPUTATION_TIME);
 			}
 
 			// At the end of each file:
@@ -175,6 +194,9 @@ public class Main {
 			writer.write(Long.toString(sumOfComputationTime) + "\n");	// The average of the computation times for the algorithm.
 			writer.flush();
 			writer2.flush();
+			
+			writer.close();
+			writer2.close();
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -191,11 +213,15 @@ public class Main {
 
 		itImp = new Algorithm(pivotingMode, neighbourhoodMode, initMode, ILS_ON);
 
-		name = INIT_MODES[initMode] + NEIGHBOURHOOD_MODES[neighbourhoodMode] + PIVOTING_MODES[pivotingMode] + ILS_MODES[ILS_OFF];
-		nameAvRelPerDev = "R-avRelPer" + INIT_MODES[initMode] + NEIGHBOURHOOD_MODES[neighbourhoodMode] + PIVOTING_MODES[pivotingMode] + ILS_MODES[ILS_OFF] + ".dat";
+		name = INIT_MODES[initMode] + NEIGHBOURHOOD_MODES[neighbourhoodMode] + PIVOTING_MODES[pivotingMode] + ILS_MODES[ILS_ON];
+		nameAvRelPerDev = "R-avRelPer" + INIT_MODES[initMode] + NEIGHBOURHOOD_MODES[neighbourhoodMode] + PIVOTING_MODES[pivotingMode] + ILS_MODES[ILS_ON] + ".dat";
 
-		try(BufferedWriter writer = new BufferedWriter(new FileWriter(name)); BufferedWriter writer2 = new BufferedWriter(new FileWriter(nameAvRelPerDev));){
+		
+		try{
 
+			BufferedWriter writer = new BufferedWriter(new FileWriter(name));
+			BufferedWriter writer2 = new BufferedWriter(new FileWriter(nameAvRelPerDev));
+			
 			int averageRelativePercentageDeviation = 0;
 			long sumOfComputationTime = 0;
 
@@ -203,23 +229,28 @@ public class Main {
 				// Run each algorithm 5 times on each instance:
 				int relPerDev = 0;
 				int cost = 0;
+				long runTime = 0;
 
 				Map<String, Object> results = null;
 				for (int i = 0; i < 5; ++i) {
 					results = itImp.findSolution(instanceFile);
-					relPerDev += (int) results.get(RELATIVE_PERCENTAGE_DEVIATION);
-					cost += (int) results.get(COST);
+					relPerDev += (Integer) results.get(RELATIVE_PERCENTAGE_DEVIATION);
+					cost += (Integer) results.get(COST);
+					runTime += (Long) results.get(COMPUTATION_TIME);
 				}
 
 				relPerDev /= 5;
 				cost /= 5;
+				runTime /= 5;
 
 				// Change these 2 lines to change the content of the results files for each algorithm:
-				writer.write(instanceFile.getName() + "\t" + relPerDev + "\t" + (long) results.get(COMPUTATION_TIME) + "\t" + cost + "\t" + (int) results.get(BEST_KNOWN) + "\n");
+				writer.write(instanceFile.getName() + "\t" + relPerDev + "\t" + runTime + "\t" + cost + "\t" + (Integer) results.get(BEST_KNOWN) + "\n");
+				writer.flush();
 				writer2.write(relPerDev + "\n");	// Files used mainly to compute the p-values, contain only the relative percentage deviations.
+				writer2.flush();
 
 				averageRelativePercentageDeviation += relPerDev;
-				sumOfComputationTime += (long) results.get(COMPUTATION_TIME);
+				sumOfComputationTime += (Long) results.get(COMPUTATION_TIME);
 			}
 
 			// At the end of each file:
@@ -230,12 +261,14 @@ public class Main {
 			writer.write(Long.toString(sumOfComputationTime) + "\n");	// The average of the computation times for the algorithm.
 			writer.flush();
 			writer2.flush();
+			
+			writer.close();
+			writer2.close();
 
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.out.println(e.getMessage());
 		}
-
 
 	}
 	
@@ -268,7 +301,10 @@ public class Main {
 				String name = INIT_MODES[initMode] + NEIGHBOURHOOD_MODES[neighbourhoodMode] + PIVOTING_MODES[pivotingMode];
 				String nameAvRelPerDev = "R-avRelPer" + INIT_MODES[initMode] + NEIGHBOURHOOD_MODES[neighbourhoodMode] + PIVOTING_MODES[pivotingMode] + ".dat";
 
-				try(BufferedWriter writer = new BufferedWriter(new FileWriter(name)); BufferedWriter writer2 = new BufferedWriter(new FileWriter(nameAvRelPerDev));){
+				try{
+					
+					BufferedWriter writer = new BufferedWriter(new FileWriter(name));
+					BufferedWriter writer2 = new BufferedWriter(new FileWriter(nameAvRelPerDev));
 
 					int averageRelativePercentageDeviation = 0;
 					long sumOfComputationTime = 0;
@@ -280,8 +316,8 @@ public class Main {
 						writer.write(instanceFile.getName() + "\t" + results.get(RELATIVE_PERCENTAGE_DEVIATION) + "\t" + results.get(COMPUTATION_TIME) + "\t" + results.get(COST) + "\t" + results.get(BEST_KNOWN) + "\n");
 						writer2.write(results.get(RELATIVE_PERCENTAGE_DEVIATION) + "\n");	// Files used mainly to compute the p-values, contain only the relative percentage deviations.
 
-						averageRelativePercentageDeviation += (int) results.get(RELATIVE_PERCENTAGE_DEVIATION);
-						sumOfComputationTime += (long) results.get(COMPUTATION_TIME);
+						averageRelativePercentageDeviation += (Integer) results.get(RELATIVE_PERCENTAGE_DEVIATION);
+						sumOfComputationTime += (Long) results.get(COMPUTATION_TIME);
 					}
 
 					// At the end of each file:
@@ -292,6 +328,9 @@ public class Main {
 					writer.write(Long.toString(sumOfComputationTime) + "\n");	// The average of the computation times for the algorithm.
 					writer.flush();
 					writer2.flush();
+					
+					writer.close();
+					writer2.close();
 
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -337,7 +376,10 @@ public class Main {
 					String name = INIT_MODES[initMode] + NEIGHBOURHOOD_MODES[neighbourhoodMode] + PIVOTING_MODES[pivotingMode];
 					String nameAvRelPerDev = "R-avRelPer" + INIT_MODES[initMode] + NEIGHBOURHOOD_MODES[neighbourhoodMode] + PIVOTING_MODES[pivotingMode] + ".dat";
 
-					try(BufferedWriter writer = new BufferedWriter(new FileWriter(name)); BufferedWriter writer2 = new BufferedWriter(new FileWriter(nameAvRelPerDev));){
+					try{
+						
+						BufferedWriter writer = new BufferedWriter(new FileWriter(name));
+						BufferedWriter writer2 = new BufferedWriter(new FileWriter(nameAvRelPerDev));
 
 						int averageRelativePercentageDeviation = 0;
 						long sumOfComputationTime = 0;
@@ -349,8 +391,8 @@ public class Main {
 							writer.write(instanceFile.getName() + "\t" + results.get(RELATIVE_PERCENTAGE_DEVIATION) + "\t" + results.get(COMPUTATION_TIME) + "\t" + results.get(COST) + "\t" + results.get(BEST_KNOWN) + "\n");
 							writer2.write(results.get(RELATIVE_PERCENTAGE_DEVIATION) + "\n");	// Files used mainly to compute the p-values, contain only the relative percentage deviations.
 
-							averageRelativePercentageDeviation += (int) results.get(RELATIVE_PERCENTAGE_DEVIATION);
-							sumOfComputationTime += (long) results.get(COMPUTATION_TIME);
+							averageRelativePercentageDeviation += (Integer) results.get(RELATIVE_PERCENTAGE_DEVIATION);
+							sumOfComputationTime += (Long) results.get(COMPUTATION_TIME);
 						}
 
 						// At the end of each file:
@@ -361,6 +403,9 @@ public class Main {
 						writer.write(Long.toString(sumOfComputationTime) + "\n");	// The average of the computation times for the algorithm.
 						writer.flush();
 						writer2.flush();
+						
+						writer.close();
+						writer2.close();
 
 					} catch (IOException e) {
 						e.printStackTrace();
