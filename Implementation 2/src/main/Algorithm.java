@@ -76,7 +76,7 @@ public class Algorithm {
 		"--ils_on"
 	};
 
-	public final static int MAX_RELATIVE_PERCENTAGE_DEVIATION = 1;
+	public final static int MAX_RELATIVE_PERCENTAGE_DEVIATION = 0;
 
 	private int pivotingMode;
 	private int neighbourhoodMode;
@@ -179,13 +179,13 @@ public class Algorithm {
 		int bestKnown = getBestKnown();
 
 		// Print some results on the console.
-		System.out.println(file.getName() + "\t" + this.initMode + "-" + this.neighbourhoodMode + "-" + this.pivotingMode + "\t" + bestPermutation.getTotalWeightedTardiness() + "\t" + bestKnown + "\tin " + currTimer + " ms\tin " + stepCounter + " steps");
+		System.out.println(file.getName() + "\t" + this.initMode + "-" + this.neighbourhoodMode + "-" + this.pivotingMode + "\t" + bestPermutation.getTotalWeightedTardiness() + "\t" + bestKnown + "\tin " + (currTimer - timerStart) + " ms\tin " + stepCounter + " steps");
 		
 		// Send the results back.
 		Map<String, Object> results = new HashMap<String, Object>();
 		int relPerDev = (int) (100.0f * (float)(bestPermutation.getTotalWeightedTardiness() - bestKnown) / (float)(bestKnown));
 		results.put(RELATIVE_PERCENTAGE_DEVIATION, relPerDev);
-		results.put(COMPUTATION_TIME, currTimer);
+		results.put(COMPUTATION_TIME, currTimer - timerStart);
 		results.put(BEST_KNOWN, bestKnown);
 		results.put(COST, bestPermutation.getTotalWeightedTardiness());
 		
@@ -213,7 +213,7 @@ public class Algorithm {
 		//System.out.println(this.instance);
 
 		// Get the runtime.
-		long runTime = getRunTime() * 10;
+		long runTime = getRunTime();
 		System.out.println("Computing " + this.instance.getJobsAmount() + "x" + this.instance.getMachineAmount() + " " + this.instance.getInstanceNumber() + " - max run-time: " + runTime);
 
 		// Get the initial solution/permutation
@@ -271,7 +271,7 @@ public class Algorithm {
 		}
 
 		// Print some results on the console.
-		System.out.println(file.getName() + "\t" + this.initMode + "-" + this.neighbourhoodMode + "-" + this.pivotingMode + "\t" + bestPermutation.getTotalWeightedTardiness() + "\t" + bestKnown + "\tin " + currTimer + " ms\tin " + stepCounter + " steps");
+		System.out.println(file.getName() + "\t" + this.initMode + "-" + this.neighbourhoodMode + "-" + this.pivotingMode + "\t" + bestPermutation.getTotalWeightedTardiness() + "\t" + bestKnown + "\tRPD: " + relPerDev + "\tin " + currTimer + " ms\tin " + stepCounter + " steps");
 		
 		// Send the results back.
 		Map<String, Object> results = new HashMap<String, Object>();
@@ -411,8 +411,8 @@ public class Algorithm {
 		int jobsAmount;
 		int machineAmount;
 
-		try {
-			Scanner scanner = new Scanner(file);
+		try(Scanner scanner = new Scanner(file);) {
+			
 			
 			// Get the jobs amount:
 			if (!scanner.hasNextInt())
@@ -478,7 +478,6 @@ public class Algorithm {
 
 			this.instance = new Instance(processingTimes, dueDates, priorities, Integer.parseInt(number));
 			
-			scanner.close();
 
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();

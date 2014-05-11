@@ -39,8 +39,9 @@ public class Main {
 		boolean batch = false;
 		boolean batch_vnd = false;
 		boolean batch_sls = false;
+		boolean batch_sls_qrtd = false;
 
-		/*for (int i = 0; i < args.length && !batch; ++i){
+		for (int i = 0; i < args.length && !batch; ++i){
 			switch (args[i]){
 			// The pivoting mode:
 			case "--first":
@@ -92,13 +93,14 @@ public class Main {
 				file = new File(args[++i]);
 				batch_sls = true;
 				break;
+			case "--batch_sls_qrtd":
+				file = new File(args[++i]);
+				batch_sls_qrtd = true;
+				break;
 			default:
 				System.out.println("Unknown Argument: " + args[i]);
 			}
-		}*/
-		
-		batch_sls = true;
-		file = new File("Instances");
+		}
 
 		if (batch){
 			batch(file);
@@ -106,8 +108,103 @@ public class Main {
 			batch_vnd(file);
 		} else if (batch_sls){
 			batch_sls(file);
+		} else if (batch_sls_qrtd) {
+			batch_sls_qualitfied_runTime_distributions(file);
 		} else {
 			new Algorithm(pivotingMode, neighbourhoodMode, initMode, ils).findSolution(file);
+		}
+	}
+	
+	private static void batch_sls_qualitfied_runTime_distributions(File file) {
+		System.out.println("BATCH BEGINS");
+		
+		if (!file.isDirectory()){
+			System.out.println("The file '" + file.getName() + "' is not a directory.");
+			return;
+		}
+
+		// A filter to avoid the system hidden files, like '.DS_Store' on MAC OS.
+		FilenameFilter filter = new FilenameFilter(){
+
+			@Override
+			public boolean accept(File dir, String name) {
+				return !name.equals(".DS_Store");
+			}
+
+		};
+		File[] files = file.listFiles(filter);
+		System.out.println("On files:");
+		for (File f: files) {
+			System.out.println(f.getName());
+		}
+		System.out.println("Computations:");
+
+		// -------------------------------------------------------
+		// We look at the 2 SLS algorithms (only slack init mode).
+		// First the SA:
+		// -------------------------------------------------------
+		
+		int pivotingMode = SA_MODE;
+		int neighbourhoodMode = INSERT_MODE;
+		int initMode = SLACK_INIT;
+
+		Algorithm itImp = new Algorithm(pivotingMode, neighbourhoodMode, initMode, ILS_OFF);
+
+		for (File instanceFile : files){
+
+			try(BufferedWriter writer = new BufferedWriter(new FileWriter(instanceFile.getName()));) {
+
+				// Run each algorithm 5 times on each instance:
+				long runTime = 0;
+
+				Map<String, Object> results = null;
+				for (int i = 0; i < 25; ++i) {
+					results = itImp.findSolutionWithMinimalQuality(instanceFile);
+					runTime = (Long) results.get(COMPUTATION_TIME);
+					
+					// Change these 2 lines to change the content of the results files for each algorithm:
+					writer.write(runTime + "\n");
+					writer.flush();
+				}
+
+			} catch (IOException e) {
+				e.printStackTrace();
+				System.out.println(e.getMessage());
+			}
+		}
+
+
+		// -------------------------------------------------------
+		// Then the ILS:
+		// -------------------------------------------------------
+
+		pivotingMode = FIRST_MODE;
+		neighbourhoodMode = INSERT_MODE;
+		initMode = SLACK_INIT;
+
+		itImp = new Algorithm(pivotingMode, neighbourhoodMode, initMode, ILS_ON);
+
+		for (File instanceFile : files){
+
+			try(BufferedWriter writer = new BufferedWriter(new FileWriter(instanceFile.getName()));) {
+
+				// Run each algorithm 5 times on each instance:
+				long runTime = 0;
+
+				Map<String, Object> results = null;
+				for (int i = 0; i < 25; ++i) {
+					results = itImp.findSolutionWithMinimalQuality(instanceFile);
+					runTime = (Long) results.get(COMPUTATION_TIME);
+					
+					// Change these 2 lines to change the content of the results files for each algorithm:
+					writer.write(runTime + "\n");
+					writer.flush();
+				}
+
+			} catch (IOException e) {
+				e.printStackTrace();
+				System.out.println(e.getMessage());
+			}
 		}
 	}
 	
