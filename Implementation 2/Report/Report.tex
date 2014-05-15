@@ -89,6 +89,17 @@ footnotesep=50mm
 \usepackage{array}
 
 \newcommand*{\course}{\fbox{INFO-H-413}} % Generic publisher logo
+\newcommand{\qrtd}[3]{
+\begin{figure}[H]
+	\begin{minipage}[c]{.49\linewidth}
+      \includegraphics[width=\linewidth]{#1}
+   \end{minipage} \hfill
+   \begin{minipage}[c]{.49\linewidth}
+      \includegraphics[width=\linewidth]{#2}
+   \end{minipage}
+	\caption{Qualified Run-time Distributions for SA and ILS, for a minimum quality of #3\%, and a maximum run-time.}
+\end{figure}
+}
 
 %----------------------------------------------------------------------------------------
 %	TITLE PAGE
@@ -202,15 +213,40 @@ The acceptance criterion uses the cost of the solutions to take the new best per
 
 As we can see, this algorithm uses perturbation to escape from a local minimum each time one is encountered. This leads to a iteration through the set of local minima. If the run-time is long enough, this could theoretically yield very good results.\\
 
+The implementation of the functionalities already present in the first implementation exercise, the first pivoting mode, the insertion mode and the SLACK heuristic, is the one from the first implementation exercise. The first pivoting mode presented an incorrect implementation, but was not corrected, since all the simulations were already finished, and the remaining time was not enough to launch everything once again.
+
 \section{Results}
 
 \subsection{Mean Relative Percentage Deviations}
+
+The maximum run-times are detailed in the following table:
+
+\begin{center}
+\begin{figure}[H]
+\begin{tabular}{| >{\centering\arraybackslash}m{2cm} | >{\centering\arraybackslash}m{2cm} |}
+\hline
+Job amount & Max. run-time (ms)\\ \hline \hline
+
+50x20 & 50530\\ \hline
+60x20 & 106810\\ \hline
+70x20 & 236770\\ \hline
+80x20 & 394640\\ \hline
+90x20 & 633700\\ \hline
+100x20 & 1084570\\ \hline
+
+\end{tabular}
+
+\caption{The maximum run-time allowed per instance size (ms).}
+\end{figure}
+\end{center}
+
+As the maximum run-time condition is verified each time the main loop of the algorithm is re-entered, the run-time may slightly go above the threshold by a few ms.
 
 \begin{center}
 \begin{figure}[H]
 \begin{tabular}{| >{\centering\arraybackslash}m{2cm} | >{\centering\arraybackslash}m{2cm} | >{\centering\arraybackslash}m{2cm} |}
 \hline
-Instances & SA & ILS \\ \hline
+Instances & SA & ILS \\ \hline \hline
 100x20\_1	&	114	&	-3	\\ \hline
 100x20\_10	&	122	&	-1	\\ \hline
 100x20\_2	&	174	&	-1	\\ \hline
@@ -230,7 +266,7 @@ Instances & SA & ILS \\ \hline
 \begin{figure}[H]
 \begin{tabular}{| >{\centering\arraybackslash}m{2cm} | >{\centering\arraybackslash}m{2cm} | >{\centering\arraybackslash}m{2cm} |}
 \hline
-Instances & SA & ILS \\ \hline
+Instances & SA & ILS \\ \hline \hline
 50x20\_1	&	349	&	1	\\ \hline
 50x20\_10	&	389	&	0	\\ \hline
 50x20\_2	&	1052	&	-5	\\ \hline
@@ -250,7 +286,7 @@ Instances & SA & ILS \\ \hline
 \begin{figure}[H]
 \begin{tabular}{| >{\centering\arraybackslash}m{2cm} | >{\centering\arraybackslash}m{2cm} | >{\centering\arraybackslash}m{2cm} |}
 \hline
-Instances & SA & ILS \\ \hline
+Instances & SA & ILS \\ \hline \hline
 60x20\_1	&	250	&	0	\\ \hline
 60x20\_10	&	275	&	0	\\ \hline
 60x20\_2	&	182	&	-1	\\ \hline
@@ -270,7 +306,7 @@ Instances & SA & ILS \\ \hline
 \begin{figure}[H]
 \begin{tabular}{| >{\centering\arraybackslash}m{2cm} | >{\centering\arraybackslash}m{2cm} | >{\centering\arraybackslash}m{2cm} |}
 \hline
-Instances & SA & ILS \\ \hline
+Instances & SA & ILS \\ \hline \hline
 70x20\_1	&	188	&	0	\\ \hline
 70x20\_10	&	203	&	-1	\\ \hline
 70x20\_2	&	154	&	0	\\ \hline
@@ -290,7 +326,7 @@ Instances & SA & ILS \\ \hline
 \begin{figure}[H]
 \begin{tabular}{| >{\centering\arraybackslash}m{2cm} | >{\centering\arraybackslash}m{2cm} | >{\centering\arraybackslash}m{2cm} |}
 \hline
-Instances & SA & ILS \\ \hline
+Instances & SA & ILS \\ \hline \hline
 80x20\_1	&	192	&	0	\\ \hline
 80x20\_10	&	167	&	-1	\\ \hline
 80x20\_2	&	167	&	0	\\ \hline
@@ -310,7 +346,7 @@ Instances & SA & ILS \\ \hline
 \begin{figure}[H]
 \begin{tabular}{| >{\centering\arraybackslash}m{2cm} | >{\centering\arraybackslash}m{2cm} | >{\centering\arraybackslash}m{2cm} |}
 \hline
-Instances & SA & ILS \\ \hline
+Instances & SA & ILS \\ \hline \hline
 90x20\_1	&	159	&	-1	\\ \hline
 90x20\_10	&	119	&	-2	\\ \hline
 90x20\_2	&	116	&	-1	\\ \hline
@@ -331,6 +367,19 @@ Instances & SA & ILS \\ \hline
 
 As we can see on the figures above, the 2 algorithms offer very different results. The SA is the worst tested, if we also look back at the first implementation exercise. The ILS, on the other hand, is the best and yields solutions that are better than the best known. On average, the SA has a relative percentage deviation of 278, while the ILS one is 0.
 
+Here is the R code used to get the Wilcoxon Test results:
+
+\begin{figure}[H]
+\begin{lstlisting}
+a<-read.table("R-avRelPer--slack--insert--sa--ils_off.dat")$V1
+b<-read.table("R-avRelPer--slack--insert--first--ils_on.dat")$V1
+results<-c(a,b)
+results<-array ( results , dim=c (60, 2) )
+test = wilcox.test (results[,1], results[,2], paired=T)$p.value
+write(test, file = "p values wilco test", ncolumns = 1)
+\end{lstlisting}
+\end{figure}
+
 \subsection{Correlation Plots of the Mean Relative Percentage Deviation}
 
 \begin{figure}[H]
@@ -338,11 +387,68 @@ As we can see on the figures above, the 2 algorithms offer very different result
 \caption{Correlation between SA and ILS on the MRPD of each instance}
 \end{figure}
 
-Except the outlier on the upper left zone (above 1000), the graph shows a certain correlation between the 2 algorithms. The higher the MRPD on the ILS side the higher on the SA side. Moreover, the values are a lot more spread on the SA side. For the ILS, the values rarely go above 0.
+Except the outlier on the upper left zone (above 1000), the graph shows a certain correlation between the 2 algorithms. The higher the MRPD on the ILS side, the higher on the SA side. Moreover, the values are a lot more spread on the SA side. For the ILS, the values rarely go above 0. Once again, this shows that the quality of the ILS is a lot more consistent than for the SA.
 
 
 \subsection{Statistical Test}
 
-With the help of the Wilcoxon test, the p-value $1.670281*10^{-11}$ was obtained, confirming what the previous graph and tables were showing. The probability to incorrectly rejecting the hypothesis of similarity between the 2 algorithms is 1.670281e-11. So the 2 algorithms are, with a high probability very different.
+With the help of the Wilcoxon test, the p-value $1.670281*10^{-11}$ was obtained, confirming what the previous graph and tables were showing. The null hypothesis was rejected since the significance level is $0.05$. So the 2 algorithms are, with a high probability, different. The use of the test was not even necessary, with the previous results for the relative percentage deviations.
+
+\subsection{Qualified Run-time Distributions}
+
+The 2 algorithms were tested with a minimum quality requirement, and a maximum run-time like before. The maximum run-time used was the same than the first simulation, since this would allow the total computation time to go below the remaining time before the end of the project.\\
+
+First, quality run-time distributions were obtained for a minimum quality of 2\% relative percentage deviation. Then the same was done for 0\%.
+
+\subsubsection{Minimal quality = 2\%}
+
+We can see on the following figures that, while the SA performs very badly and always reaches the maximum allowed run-time, the ILS almost never goes above 100s of computation time to get a high quality solution of 2\%. The run-time of the ILS is not very consistent over different runs of the same instances for the instances with the lowest number of jobs. Sometimes, the difference goes above one order of magnitude (10x more, or 10x less). For the 2 larger instances, the run-time is rather consistent. As we saw on the correlation plot, the quality of the ILS is consistent, but we now see that this quality of solution is obtained very quickly (< 100s).\\
+
+The figures of the SA present lines, or very focused values on the x axis. That is because the algorithm always reaches the maximum allowed run-time.
+
+\qrtd{2-off-50.png}{2-on-50.png}{2}
+\qrtd{2-off-60.png}{2-on-60.png}{2}
+\qrtd{2-off-70.png}{2-on-70.png}{2}
+\qrtd{2-off-80.png}{2-on-80.png}{2}
+\qrtd{2-off-90.png}{2-on-90.png}{2}
+\qrtd{2-off-100.png}{2-on-100.png}{2}
+
+\subsubsection{Minimal quality = 0\%}
+
+For a minimum quality of 0\%, we observe the same results for the SA than for the 2\% minimum quality requirement. For the ILS, the same observations also apply, except that the graphs are slightly shifted to the right, as expected, since the time to get to a better quality is bigger. The distribution is more sparse for the instance with 90 jobs. The evolution of the 50th percentile is described below, with its relative percentage evolution:
+
+$$Evolution = \frac{P_{50, new} - P_{50, previous}}{P_{50, previous}}$$
+
+\begin{center}
+\begin{figure}[H]
+\begin{tabular}{| >{\centering\arraybackslash}m{2cm} | >{\centering\arraybackslash}m{2cm} |}
+\hline
+Job amount & Evolution(\%) \\ \hline \hline
+
+50x20 & 66 \\ \hline
+60x20 & 50 \\ \hline
+70x20 & 200 \\ \hline
+80x20 & 233 \\ \hline
+90x20 & 100 \\ \hline
+100x20 & 10 \\ \hline
+
+\end{tabular}
+
+\caption{The Evolution of the 50th percentile.}
+\end{figure}
+\end{center}
+
+The worst one is the 233\% evolution, but since the absolute run-time is not hight, the real difference in time is not so bad. The shapes of the cumulative curves are the same, just shifted to the right. The evolution described above does not follow a linear behaviour, by increasing with the number of jobs. Instead, it decreases after 80 jobs on the provided instances.
+
+\qrtd{0-off-50.png}{0-on-50.png}{0}
+\qrtd{0-off-60.png}{0-on-60.png}{0}
+\qrtd{0-off-70.png}{0-on-70.png}{0}
+\qrtd{0-off-80.png}{0-on-80.png}{0}
+\qrtd{0-off-90.png}{0-on-90.png}{0}
+\qrtd{0-off-100.png}{0-on-100.png}{0}
+
+\section{Conclusion}
+
+The real winner here is, of course, the ILS, yielding astonishing results. It provides high quality solutions in a small amount of time. The run-times are focused. The SA in this context, or the use of these values for the parameters, was a bad idea. Tests should be made considering higher values of $F_0$, and $r$.
 
 \end{document}

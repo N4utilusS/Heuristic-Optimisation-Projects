@@ -95,6 +95,7 @@ public class Main {
 				break;
 			case "--batch_sls_qrtd":
 				file = new File(args[++i]);
+				Algorithm.MAX_RELATIVE_PERCENTAGE_DEVIATION = Integer.parseInt(args[++i]);
 				batch_sls_qrtd = true;
 				break;
 			default:
@@ -152,7 +153,7 @@ public class Main {
 
 		for (File instanceFile : files){
 
-			try(BufferedWriter writer = new BufferedWriter(new FileWriter(instanceFile.getName()));) {
+			try(BufferedWriter writer = new BufferedWriter(new FileWriter(Algorithm.MAX_RELATIVE_PERCENTAGE_DEVIATION + " " + Algorithm.ILS_MODES[Algorithm.ILS_OFF] + " " + instanceFile.getName()));) {
 
 				// Run each algorithm 5 times on each instance:
 				long runTime = 0;
@@ -173,7 +174,7 @@ public class Main {
 			}
 		}
 
-
+		
 		// -------------------------------------------------------
 		// Then the ILS:
 		// -------------------------------------------------------
@@ -186,7 +187,7 @@ public class Main {
 
 		for (File instanceFile : files){
 
-			try(BufferedWriter writer = new BufferedWriter(new FileWriter(instanceFile.getName()));) {
+			try(BufferedWriter writer = new BufferedWriter(new FileWriter(Algorithm.MAX_RELATIVE_PERCENTAGE_DEVIATION + " " + Algorithm.ILS_MODES[Algorithm.ILS_ON] + " " + instanceFile.getName()));) {
 
 				// Run each algorithm 5 times on each instance:
 				long runTime = 0;

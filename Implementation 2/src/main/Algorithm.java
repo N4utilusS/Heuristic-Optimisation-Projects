@@ -76,7 +76,7 @@ public class Algorithm {
 		"--ils_on"
 	};
 
-	public final static int MAX_RELATIVE_PERCENTAGE_DEVIATION = 0;
+	public static int MAX_RELATIVE_PERCENTAGE_DEVIATION = 0;
 
 	private int pivotingMode;
 	private int neighbourhoodMode;
