@@ -8,6 +8,7 @@ import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.HashMap;
 
 import neighbourhood_generator.AbstractNeighbourhoodGenerator;
 import neighbourhood_generator.ExchangeNeighbourhoodGenerator;
@@ -120,6 +121,8 @@ public class Algorithm {
 
 		// Start the timer
 		long timerStart = System.currentTimeMillis();
+		HashMap<int, Permutation> setPx = new HashMap();
+		HashMap<int, Permutation> setPy = new HashMap();
 
 		// Find the size of the problem (#jobs and #machines), and other information
 		getInformation(file);
@@ -158,10 +161,25 @@ public class Algorithm {
 			do {
 				newPermutation = perturbationGenerator.perturb(bestPermutation);
 				newPermutation = localSearch(newPermutation);
-				
+				int newPermWT = newPermutation.getTotalWeightedTardiness();
+				int bestPermWT = newPermutation.getTotalWeightedTardiness();
+				int newPermMS = newPermutation.getMakespan();
+				int bestPermMs = newPermutation.getMakespan();
+
+				Permutation compX = setPx.get(newPermWT);
+				Permutation compY = setPy.get(newPermMS);
+
+				if(compX == null || newPermMS < compX.getMakespan())
+					setPx.put(newPermWT, newPermutation);
+				if(compy == null || newPermWT < compY.getTotalWeightedTardiness())
+					setPy.put(newPermMS, newPermutation);
+
 				// Acceptance criterion:
-				if (newPermutation.getTotalWeightedTardiness() <= bestPermutation.getTotalWeightedTardiness())
+				if ((newPermWT < bestPermWT && newPermMS <= bestPermMS) || (newPermWT <= bestPermWT && newPermMS < bestPermMS))
 					bestPermutation = newPermutation;
+				else if ((newPermWT < bestPermWT && newPermMS > bestPermMS) || (newPermWT > bestPermWT && newPermMS < bestPermMS))
+					bestPermutation = newPermutation;
+
 				stepCounter++;
 				currTimer = System.currentTimeMillis();
 			} while (currTimer - timerStart < runTime);
