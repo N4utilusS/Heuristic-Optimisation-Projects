@@ -205,15 +205,18 @@ public class Permutation {
 	public String toString(){
 		String str = "";
 
-		for (int i = 0; i < this.size(); ++i){
+		for (int i = 0; i < this.size() -1; ++i){
 			str += this.jobs[i] + ",";
 		}
-		str += "\n";
-		for (int i = 0; i < this.size(); ++i){
-			str += this.jobsWeightedTardiness[i] + ",";
-		}
+		str += this.jobs[this.size()-1]; //Last job, no need for a final comma.
+//		str += "\n";
+//		for (int i = 0; i < this.size(); ++i){
+//			str += this.jobsWeightedTardiness[i] + ",";
+//		}
+		
+		return str;
 
-		return str + " --> " + this.getTotalWeightedTardiness();
+//		return str + " --> " + this.getTotalWeightedTardiness();
 	}
 
 	/**
