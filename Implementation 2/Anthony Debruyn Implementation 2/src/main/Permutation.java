@@ -50,22 +50,22 @@ public class Permutation {
 		this.completionTimes = deepCopyIntMatrix(otherCompletionTimes);
 		this.jobsWeightedTardiness = jobsWeightedTardiness.clone();
 		this.newValueIndex = newValueIndex;
-
+		
 	}
-
+	
 	/**
 	 * Used to clone a 2D matrix of integers.
 	 * @param input The matrix we want a copy from.
 	 * @return The copy.
 	 */
 	public static int[][] deepCopyIntMatrix(int[][] input) {
-		if (input == null)
-			return null;
-		int[][] result = new int[input.length][];
-		for (int r = 0; r < input.length; r++) {
-			result[r] = input[r].clone();
-		}
-		return result;
+	    if (input == null)
+	        return null;
+	    int[][] result = new int[input.length][];
+	    for (int r = 0; r < input.length; r++) {
+	        result[r] = input[r].clone();
+	    }
+	    return result;
 	}
 
 	/**
@@ -95,25 +95,7 @@ public class Permutation {
 
 		return this.jobsWeightedTardiness[instance.getJobsAmount()-1];
 	}
-
-	/**
-	 * To be called after getTotalWeightedTardiness()!
-	 */
-	public int getMakespan(){
-		// No need to recalculate if nothing has changed since the previous call.
-		if (this.newValueIndex == instance.getJobsAmount())
-			return this.completionTimes[instance.getJobsAmount()-1][instance.getMachineAmount()-1];
-
-		// Compute the completion times.
-		this.computeCompletionTimes(this.instance.getJobsAmount()-1);
-
-		// Update the newValueIndex value, since the total weighted tardiness is up to date.
-		// Thanks to this, each time this method will be called, no calculation will be needed to return the cost.
-		this.newValueIndex = instance.getJobsAmount();
-
-		return this.completionTimes[instance.getJobsAmount()-1][instance.getMachineAmount()-1];
-	}
-
+	
 	/**
 	 * Computes the completion times for the current permutation to the 'maxJobNumber'th job.
 	 * The parameter is mainly used in the case of the slack heuristic where we do not need to compute all the matrix.
@@ -122,7 +104,7 @@ public class Permutation {
 	private void computeCompletionTimes(int maxJobNumber){
 		maxJobNumber = Math.min(maxJobNumber, this.instance.getJobsAmount()-1);
 		maxJobNumber = Math.max(0, maxJobNumber);
-
+		
 		if (this.newValueIndex == 0){
 
 			// Calculate the first column of the completion matrix.
@@ -152,15 +134,15 @@ public class Permutation {
 	 * @return The new permutation, with the newValueIndex = min(this.newValueIndex, i, j).
 	 */
 	public Permutation swap(int i, int j){
-
+		
 		int[] jobs = this.jobs.clone();
 		int temp = jobs[i];
 		jobs[i] = jobs[j];
 		jobs[j] = temp;
-
+		
 		int min = Math.min(i, j);
 		min = Math.min(this.newValueIndex, min);
-
+		
 		return new Permutation(this.instance, jobs, this.completionTimes, this.jobsWeightedTardiness, min);
 	}
 
@@ -187,10 +169,10 @@ public class Permutation {
 
 
 		jobs[placeNumber] = temp;
-
+		
 		int min = Math.min(jobNumber, placeNumber);
 		min = Math.min(this.newValueIndex, min);
-
+		
 		return new Permutation(this.instance, jobs, this.completionTimes, this.jobsWeightedTardiness, min);
 	}
 
@@ -204,7 +186,7 @@ public class Permutation {
 
 	public String toString(){
 		String str = "";
-
+		
 		for (int i = 0; i < this.size(); ++i){
 			str += this.jobs[i] + ",";
 		}
@@ -215,7 +197,7 @@ public class Permutation {
 
 		return str + " --> " + this.getTotalWeightedTardiness();
 	}
-
+	
 	/**
 	 * Computes and returns the weighted earliness of the permutation/solution, at 'jobNumber'th spot (0->jobsAmount-1).
 	 * The value is computed for the 'jobNumber'th job.
@@ -227,7 +209,7 @@ public class Permutation {
 			this.computeCompletionTimes(jobNumber);
 		// Here the newValueIndex is not updated to jobNumber, since we still need to update the jobsWeightedTardiness vector when 
 		// we want the total weighted tardiness (update from the current index newIndexValue).
-
+		
 		return this.instance.getPriorityFor(this.jobs[jobNumber]) * (this.instance.getDueDateFor(this.jobs[jobNumber]) - this.completionTimes[jobNumber][this.instance.getMachineAmount()-1]);
 	}
 }
