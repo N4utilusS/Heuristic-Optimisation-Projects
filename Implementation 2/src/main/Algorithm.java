@@ -164,14 +164,14 @@ public class Algorithm {
 				int newPermWT = newPermutation.getTotalWeightedTardiness();
 				int bestPermWT = newPermutation.getTotalWeightedTardiness();
 				int newPermMS = newPermutation.getMakespan();
-				int bestPermMs = newPermutation.getMakespan();
+				int bestPermMS = newPermutation.getMakespan();
 
 				Permutation compX = setPx.get(newPermWT);
 				Permutation compY = setPy.get(newPermMS);
 
 				if(compX == null || newPermMS < compX.getMakespan())
 					setPx.put(newPermWT, newPermutation);
-				if(compy == null || newPermWT < compY.getTotalWeightedTardiness())
+				if(compY == null || newPermWT < compY.getTotalWeightedTardiness())
 					setPy.put(newPermMS, newPermutation);
 
 				// Acceptance criterion:
@@ -291,17 +291,22 @@ public class Algorithm {
 
 		}
 
+		Set<Integer> xKey = setPx.keySet();
+		for (int i = 0; i < xKey.size(); ++i) {
+			Permutation perm = setPx.get(xKey.get(i));
+			System.out.println(perm.getTotalWeightedTardiness() + " " + perm.getMakespan() + " " + perm.toString());
+		}
+
+		Set<Integer> yKey = setPy.keySet();
+		for (int i = 0; i < yKey.size(); ++i) {
+			Permutation perm = setPy.get(yKey.get(i));
+			System.out.println(perm.getTotalWeightedTardiness() + " " + perm.getMakespan() + " " + perm.toString());
+		}
+
+
 		// Print some results on the console.
-		System.out.println(file.getName() + "\t" + this.initMode + "-" + this.neighbourhoodMode + "-" + this.pivotingMode + "\t" + bestPermutation.getTotalWeightedTardiness() + "\t" + bestKnown + "\tRPD: " + relPerDev + "\tin " + currTimer + " ms\tin " + stepCounter + " steps");
 		
-		// Send the results back.
-		Map<String, Object> results = new HashMap<String, Object>();
-		results.put(RELATIVE_PERCENTAGE_DEVIATION, relPerDev);
-		results.put(COMPUTATION_TIME, currTimer);
-		results.put(BEST_KNOWN, bestKnown);
-		results.put(COST, bestPermutation.getTotalWeightedTardiness());
-		
-		return results;
+		return null;
 	}
 	
 	/**
