@@ -24,7 +24,7 @@ public class FirstPivotingManager extends AbstractPivotingManager {
 		
 		do {
 			newPermutation = this.neighbourhoodGenerator.getNextNeighbour(permutation);
-		} while ((newPermutation != null) && (newPermutation.getTotalWeightedTardiness() >= permutation.getTotalWeightedTardiness() || newPermutation.getMakespan() >= permutation.getMakespan()));
+		} while ((newPermutation != null) && (newPermutation.getTotalWeightedTardiness() >= permutation.getTotalWeightedTardiness() && newPermutation.getMakespan() >= permutation.getMakespan()));
 		
 		return ((newPermutation == null) ? permutation : newPermutation);
 	}
