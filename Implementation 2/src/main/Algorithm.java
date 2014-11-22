@@ -52,6 +52,8 @@ public class Algorithm {
 	public final static String BEST_KNOWN = "Best Known";
 	public final static String COST = "Cost";
 	
+	public final static int JOBS_AMOUNT = 200;
+	
 	public final static String[] INIT_MODES = {
 		"--random",
 		"--slack"
@@ -408,83 +410,19 @@ public class Algorithm {
 	 * @param file The file containing the information for the instance.
 	 */
 	private void getInformation(File file) {
-		int jobsAmount;
-		int machineAmount;
-
-		try(Scanner scanner = new Scanner(file);) {
+		
+		File jobsFile = new File("91ex20141122.txt");
+		int[][] jobsProcessTime = new int[JOBS_AMOUNT][12];
+		try {
+			Scanner scan = new Scanner(jobsFile);
 			
-			
-			// Get the jobs amount:
-			if (!scanner.hasNextInt())
-				throw new Exception("Jobs amount is missing in the file: " + file.getPath());
-			jobsAmount = scanner.nextInt();
-
-			// Get the machine amount:
-			if (!scanner.hasNextInt())
-				throw new Exception("Machine amount is missing in the file: " + file.getPath());
-			machineAmount = scanner.nextInt();
-
-			// Instanciate the matrices:
-			int[][] processingTimes = new int[jobsAmount][machineAmount];
-
-			// Get the processing times:
-			for (int i = 0; i < jobsAmount; ++i){
-				for (int j = 0; j < machineAmount; ++j){
-					if (!scanner.hasNextInt())
-						throw new Exception("Machine number is missing for job " + (i+1) + " in the file: " + file.getPath());
-					scanner.nextInt();
-					if (!scanner.hasNextInt())
-						throw new Exception("Machine processing time is missing for job " + (i+1) + ", machine " + (j+1) + ", in the file: " + file.getPath());
-					processingTimes[i][j] = scanner.nextInt();
-					if (processingTimes[i][j] < 0)
-						processingTimes[i][j] = 0;
-
+			for(int i = 0; i < JOBS_AMOUNT; ++i) {
+				for(int j = 0; j < 12; ++j) {
+					jobsProcessTime[i][j] = scan.nextInt();
 				}
 			}
-
-			// Get the due dates and the priorities:
-			int[] dueDates = new int[jobsAmount];
-			int[] priorities = new int[jobsAmount];
-
-			if (!scanner.hasNext())
-				throw new Exception("Reldue string is missing in the file: " + file.getPath());
-			scanner.next();
-
-			for (int i = 0; i < jobsAmount; ++i){
-
-				if (!scanner.hasNextInt())
-					throw new Exception("-1 is missing in the file: " + file.getPath());
-				scanner.next();
-
-				if (!scanner.hasNextInt())
-					throw new Exception("Due date is missing in the file: " + file.getPath());
-				dueDates[i] = scanner.nextInt();
-				if (dueDates[i] < 1)
-					throw new Exception("Due date negative for job " + i + " in the file: " + file.getPath());
-
-				if (!scanner.hasNextInt())
-					throw new Exception("-1 is missing in the file: " + file.getPath());
-				scanner.next();
-
-				if (!scanner.hasNextInt())
-					throw new Exception("Due date is missing in the file: " + file.getPath());
-				priorities[i] = scanner.nextInt();
-				if (priorities[i] < 1)
-					throw new Exception("Priority negative for job " + i + " in the file: " + file.getPath());
-			}
-
-			// Get the instance number (the last number in the file name).
-			String number = file.getName().substring(file.getName().lastIndexOf("_")+1);
-
-			this.instance = new Instance(processingTimes, dueDates, priorities, Integer.parseInt(number));
-			
-
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
-			System.out.println("File not available.");
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.out.println(e.getMessage());
 		}
 
 	}
