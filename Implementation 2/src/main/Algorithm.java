@@ -297,6 +297,8 @@ public class Algorithm {
 			System.out.println(perm.getTotalWeightedTardiness() + " " + perm.getMakespan() + " " + perm.toString());
 		}
 
+		System.out.println(" ");
+
 		Set<Integer> yKey = setPy.keySet();
 		for (int i = 0; i < yKey.size(); ++i) {
 			Permutation perm = setPy.get(yKey.get(i));
