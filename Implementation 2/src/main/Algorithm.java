@@ -53,6 +53,7 @@ public class Algorithm {
 	public final static String COST = "Cost";
 	
 	public final static int JOBS_AMOUNT = 200;
+	public final static int PROCESSING_UNITS = 10; //Amount of available CPUs
 	
 	public final static String[] INIT_MODES = {
 		"--random",
@@ -412,18 +413,30 @@ public class Algorithm {
 	private void getInformation(File file) {
 		
 		File jobsFile = new File("91ex20141122.txt");
-		int[][] jobsProcessTime = new int[JOBS_AMOUNT][12];
+		
+		int[] dueDates 				= new int[JOBS_AMOUNT];
+		int[] priorities 			= new int[JOBS_AMOUNT];
+		int[][] processingTimes 	= new int[JOBS_AMOUNT][PROCESSING_UNITS];
+		
 		try {
 			Scanner scan = new Scanner(jobsFile);
 			
 			for(int i = 0; i < JOBS_AMOUNT; ++i) {
-				for(int j = 0; j < 12; ++j) {
-					jobsProcessTime[i][j] = scan.nextInt();
+				priorities[i] 	= scan.nextInt();
+				dueDates[i] 	= scan.nextInt();
+				
+				for(int j = 0; j < PROCESSING_UNITS; ++j) {
+					processingTimes[i][j] = scan.nextInt();
 				}
 			}
+			
+			scan.close();
+			this.instance = new Instance(processingTimes, dueDates, priorities, 0);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
+		
+		
 
 	}
 
